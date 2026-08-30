@@ -13,8 +13,13 @@ export default function WelcomePage() {
   async function beginJourney() {
     if (entering) return;
     setEntering(true);
-    await start();
-    window.setTimeout(() => router.push('/itinerary'), 420);
+    try {
+      await start();
+    } catch (error) {
+      console.warn('Audio tidak dapat dimulai pada perangkat ini.', error);
+    } finally {
+      window.setTimeout(() => router.push('/itinerary'), 420);
+    }
   }
 
   return (
