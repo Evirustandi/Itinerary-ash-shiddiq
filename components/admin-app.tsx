@@ -74,7 +74,8 @@ export function AdminApp() {
   return (
     <main className="admin-shell">
       <header className="admin-header">
-        <a href="/"><ArrowLeft /> Kembali ke itinerary</a>
+        <a href="/itinerary"><ArrowLeft /> Kembali ke itinerary</a>
+        <img className="admin-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" />
         <span><ShieldCheck /> Area pengelola</span>
       </header>
 

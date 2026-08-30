@@ -77,9 +77,8 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
   return (
     <main className="min-h-screen">
       <header className="site-header">
-        <a href="#atas" className="brand-lockup" aria-label="Ash-Shiddiq Tour & Travel">
-          <span className="brand-mark" aria-hidden="true">ا</span>
-          <span><b>ASH-SHIDDIQ</b><small>TOUR & TRAVEL</small></span>
+        <a href="/" className="brand-lockup" aria-label="Kembali ke halaman awal Ash-Shiddiq Tour & Travel">
+          <img className="site-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" />
         </a>
         <div className="header-actions">
           <span className="live-pill"><Radio /> Live itinerary</span>
@@ -185,7 +184,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
         </section>
 
         <footer>
-          <div><span className="brand-mark small" aria-hidden="true">ا</span><p><b>Ash‑Shiddiq Tour & Travel</b><small>PT. Hasan Berkah Wisata · PPIU 09102303094760001</small></p></div>
+          <div><img className="footer-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" /><p><small>PT. Hasan Berkah Wisata · PPIU 09102303094760001</small></p></div>
           <a href="/admin">Halaman pengelola <ExternalLink /></a>
         </footer>
       </div>

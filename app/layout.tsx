@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { AmbientAudioProvider } from '@/components/ambient-audio';
 import './globals.css';
 
 const siteOrigin = process.env.SITE_URL ?? 'http://localhost:3000';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
-  title: 'Itinerary Umrah 2026 | Ash‑Shiddiq',
-  description: 'Jadwal perjalanan umrah Ash‑Shiddiq 27 September–9 Oktober 2026 yang selalu diperbarui.',
+  title: 'Perjalanan Umrah 2026 | Ash‑Shiddiq',
+  description: 'Mulai perjalanan dan ikuti jadwal umrah Ash‑Shiddiq 27 September–9 Oktober 2026 yang selalu diperbarui.',
   openGraph: {
     title: 'Itinerary Umrah 2026 | Ash‑Shiddiq',
     description: 'Jadwal perjalanan umrah 27 September–9 Oktober 2026 yang selalu diperbarui.',
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body>{children}</body>
+      <body><AmbientAudioProvider>{children}</AmbientAudioProvider></body>
     </html>
   );
 }
