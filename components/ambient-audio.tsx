@@ -18,7 +18,7 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
   const [enabled, setEnabled] = useState(false);
 
   const start = useCallback(async () => {
-    const audio = audioRef.current ?? new Audio('/ambient-journey.wav');
+    const audio = audioRef.current ?? new Audio(`/api/audio?started=${Date.now()}`);
     if (!audioRef.current) {
       audio.loop = true;
       audio.preload = 'auto';

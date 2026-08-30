@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Check, Eye, EyeOff, Loader2, Megaphone, Save, ShieldCheck } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, Check, Eye, EyeOff, FileAudio, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { EventStatus, ItineraryEvent, ItineraryPayload } from '@/lib/itinerary-data';
 
 type EditFields = Pick<ItineraryEvent, 'time' | 'title' | 'details' | 'location' | 'status' | 'statusNote'>;
+type AudioInfo = { source: 'default' | 'custom'; filename: string; contentType: string; size: number; updatedAt?: string };
 
 export function AdminApp() {
   const [data, setData] = useState<ItineraryPayload | null>(null);
@@ -15,7 +16,12 @@ export function AdminApp() {
   const [selectedId, setSelectedId] = useState('');
   const [fields, setFields] = useState<EditFields | null>(null);
   const [notice, setNotice] = useState('');
-  const [saving, setSaving] = useState<'event' | 'notice' | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioInfo, setAudioInfo] = useState<AudioInfo | null>(null);
+  const [previewing, setPreviewing] = useState(false);
+  const previewRef = useRef<HTMLAudioElement | null>(null);
+  const previewUrlRef = useRef('');
+  const [saving, setSaving] = useState<'event' | 'notice' | 'audio' | 'audio-reset' | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -28,7 +34,19 @@ export function AdminApp() {
     if (!selectedId) setSelectedId(payload.days[0]?.events[0]?.id ?? '');
   }
 
-  useEffect(() => { void loadData().catch((cause) => setError(cause.message)); }, []);
+  async function loadAudioInfo() {
+    const response = await fetch('/api/audio/manage', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Informasi audio belum dapat dimuat.');
+    setAudioInfo(await response.json() as AudioInfo);
+  }
+
+  useEffect(() => {
+    void Promise.all([loadData(), loadAudioInfo()]).catch((cause) => setError(cause.message));
+    return () => {
+      previewRef.current?.pause();
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    };
+  }, []);
 
   const selectedEvent = useMemo(() => data?.days.flatMap((day) => day.events).find((event) => event.id === selectedId), [data, selectedId]);
   useEffect(() => {
@@ -68,6 +86,68 @@ export function AdminApp() {
       await patch({ kind: 'notice', value: notice });
       setMessage('Pengumuman berhasil diperbarui.');
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
+    finally { setSaving(null); }
+  }
+
+  function stopPreview() {
+    previewRef.current?.pause();
+    previewRef.current = null;
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    previewUrlRef.current = '';
+    setPreviewing(false);
+  }
+
+  async function previewAudio() {
+    if (!audioFile) return;
+    stopPreview();
+    const url = URL.createObjectURL(audioFile);
+    const audio = new Audio(url);
+    previewUrlRef.current = url;
+    previewRef.current = audio;
+    audio.volume = 0.65;
+    audio.addEventListener('ended', stopPreview, { once: true });
+    try {
+      await audio.play();
+      setPreviewing(true);
+    } catch {
+      stopPreview();
+      setError('Pratinjau audio tidak dapat diputar pada browser ini.');
+    }
+  }
+
+  async function saveAudio() {
+    if (!audioFile) return;
+    stopPreview();
+    setSaving('audio'); setError(''); setMessage('');
+    try {
+      const response = await fetch('/api/audio/manage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': audioFile.type || 'application/octet-stream',
+          'x-admin-passcode': passcode,
+          'x-audio-filename': encodeURIComponent(audioFile.name),
+        },
+        body: audioFile,
+      });
+      const payload = await response.json() as { message?: string };
+      if (!response.ok) throw new Error(payload.message || 'Audio gagal disimpan.');
+      setAudioFile(null);
+      await loadAudioInfo();
+      setMessage('Audio latar berhasil diganti dan akan dipakai saat perjalanan dimulai.');
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Audio gagal disimpan.'); }
+    finally { setSaving(null); }
+  }
+
+  async function resetAudio() {
+    stopPreview();
+    setSaving('audio-reset'); setError(''); setMessage('');
+    try {
+      const response = await fetch('/api/audio/manage', { method: 'DELETE', headers: { 'x-admin-passcode': passcode } });
+      const payload = await response.json() as { message?: string };
+      if (!response.ok) throw new Error(payload.message || 'Audio gagal dikembalikan.');
+      await loadAudioInfo();
+      setMessage('Audio ambient bawaan digunakan kembali.');
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Audio gagal dikembalikan.'); }
     finally { setSaving(null); }
   }
 
@@ -120,6 +200,25 @@ export function AdminApp() {
             <div className="admin-card-heading"><div><small>Pengumuman utama</small><h2>Pesan untuk semua jemaah</h2></div><Megaphone /></div>
             <textarea value={notice} onChange={(event) => setNotice(event.target.value)} rows={3} />
             <Button variant="outline" onClick={() => void saveNotice()} disabled={saving !== null || !passcode}>{saving === 'notice' ? <Loader2 className="animate-spin" /> : <Megaphone />} Perbarui pengumuman</Button>
+          </article>
+
+          <article className="admin-card audio-editor">
+            <div className="admin-card-heading"><div><small>Audio latar</small><h2>Ganti audio perjalanan</h2></div><FileAudio /></div>
+            <div className="current-audio">
+              <FileAudio />
+              <div><span>Sedang digunakan</span><strong>{audioInfo?.filename ?? 'Memuat informasi audio…'}</strong><small>{audioInfo ? `${audioInfo.source === 'default' ? 'Audio bawaan' : 'Audio pilihan Anda'} · ${(audioInfo.size / 1024 / 1024).toFixed(1)} MB` : ''}</small></div>
+            </div>
+            <label className="audio-file-field">
+              <span>Pilih berkas baru</span>
+              <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,audio/ogg,.mp3,.wav,.m4a,.ogg" onChange={(event) => { stopPreview(); setAudioFile(event.target.files?.[0] ?? null); }} />
+              <small>MP3, WAV, M4A, atau OGG · maksimal 12 MB</small>
+            </label>
+            {audioFile && <div className="audio-file-actions">
+              <p><strong>{audioFile.name}</strong><small>{(audioFile.size / 1024 / 1024).toFixed(1)} MB</small></p>
+              <Button variant="outline" onClick={() => void (previewing ? Promise.resolve(stopPreview()) : previewAudio())}>{previewing ? <Square /> : <Play />} {previewing ? 'Hentikan' : 'Dengarkan'}</Button>
+              <Button onClick={() => void saveAudio()} disabled={saving !== null || !passcode}>{saving === 'audio' ? <Loader2 className="animate-spin" /> : <Upload />} Simpan audio</Button>
+            </div>}
+            {audioInfo?.source === 'custom' && <button className="audio-reset" onClick={() => void resetAudio()} disabled={saving !== null || !passcode}>{saving === 'audio-reset' ? <Loader2 className="animate-spin" /> : <RotateCcw />} Gunakan audio bawaan</button>}
           </article>
 
           {(message || error) && <div className={error ? 'admin-message error' : 'admin-message'}>{error || message}</div>}

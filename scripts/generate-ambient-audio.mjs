@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const sampleRate = 22050;
-const duration = 28;
+const duration = Number(process.argv[2] ?? 28);
 const totalSamples = sampleRate * duration;
 const samples = new Float64Array(totalSamples);
 
@@ -83,7 +83,7 @@ for (let index = 0; index < totalSamples; index += 1) {
   wav.writeInt16LE(Math.round(value * 32767), 44 + index * 2);
 }
 
-const output = resolve('public/ambient-journey.wav');
+const output = resolve(process.argv[3] ?? 'public/ambient-journey.wav');
 mkdirSync(dirname(output), { recursive: true });
 writeFileSync(output, wav);
 console.log(`Generated ${output} (${(wav.length / 1024 / 1024).toFixed(2)} MB)`);
