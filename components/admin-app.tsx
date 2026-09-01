@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, Eye, EyeOff, FileAudio, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
+import { ArrowLeft, Check, ContactRound, Eye, EyeOff, FileAudio, Hotel, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { EventStatus, ItineraryEvent, ItineraryPayload } from '@/lib/itinerary-data';
+import type { EventStatus, ItineraryEvent, ItineraryPayload, TripSupport } from '@/lib/itinerary-data';
 
 type EditFields = Pick<ItineraryEvent, 'time' | 'title' | 'details' | 'location' | 'status' | 'statusNote'>;
 type AudioInfo = { source: 'default' | 'custom'; filename: string; contentType: string; size: number; updatedAt?: string };
@@ -16,12 +16,13 @@ export function AdminApp() {
   const [selectedId, setSelectedId] = useState('');
   const [fields, setFields] = useState<EditFields | null>(null);
   const [notice, setNotice] = useState('');
+  const [support, setSupport] = useState<TripSupport | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioInfo, setAudioInfo] = useState<AudioInfo | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const previewRef = useRef<HTMLAudioElement | null>(null);
   const previewUrlRef = useRef('');
-  const [saving, setSaving] = useState<'event' | 'notice' | 'audio' | 'audio-reset' | null>(null);
+  const [saving, setSaving] = useState<'event' | 'notice' | 'support' | 'audio' | 'audio-reset' | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -31,6 +32,7 @@ export function AdminApp() {
     const payload = await response.json() as ItineraryPayload;
     setData(payload);
     setNotice(payload.notice);
+    setSupport(payload.support);
     if (!selectedId) setSelectedId(payload.days[0]?.events[0]?.id ?? '');
   }
 
@@ -68,6 +70,7 @@ export function AdminApp() {
     if (!response.ok) throw new Error(payload.message || 'Pembaruan gagal disimpan.');
     setData(payload);
     setNotice(payload.notice);
+    setSupport(payload.support);
   }
 
   async function saveEvent() {
@@ -86,6 +89,16 @@ export function AdminApp() {
       await patch({ kind: 'notice', value: notice });
       setMessage('Pengumuman berhasil diperbarui.');
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
+    finally { setSaving(null); }
+  }
+
+  async function saveSupport() {
+    if (!support) return;
+    setSaving('support');
+    try {
+      await patch({ kind: 'support', updates: support });
+      setMessage('Kontak pendamping dan informasi hotel berhasil diperbarui.');
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Informasi perjalanan gagal disimpan.'); }
     finally { setSaving(null); }
   }
 
@@ -201,6 +214,28 @@ export function AdminApp() {
             <textarea value={notice} onChange={(event) => setNotice(event.target.value)} rows={3} />
             <Button variant="outline" onClick={() => void saveNotice()} disabled={saving !== null || !passcode}>{saving === 'notice' ? <Loader2 className="animate-spin" /> : <Megaphone />} Perbarui pengumuman</Button>
           </article>
+
+          {support && <article className="admin-card support-editor">
+            <div className="admin-card-heading"><div><small>Kontak & akomodasi</small><h2>Pendamping dan hotel</h2></div><ContactRound /></div>
+            <div className="admin-form">
+              <div className="admin-subheading"><ContactRound /><div><strong>Pendamping jemaah</strong><small>Nomor akan menjadi tombol WhatsApp.</small></div></div>
+              <div className="two-fields">
+                <label><span>Nama Tour Leader</span><Input value={support.tourLeader.name} onChange={(event) => setSupport({ ...support, tourLeader: { ...support.tourLeader, name: event.target.value } })} placeholder="Contoh: Ustadz Ahmad" /></label>
+                <label><span>WhatsApp Tour Leader</span><Input type="tel" value={support.tourLeader.phone} onChange={(event) => setSupport({ ...support, tourLeader: { ...support.tourLeader, phone: event.target.value } })} placeholder="Contoh: 0812 3456 7890" /></label>
+                <label><span>Nama Muthawwif</span><Input value={support.mutawwif.name} onChange={(event) => setSupport({ ...support, mutawwif: { ...support.mutawwif, name: event.target.value } })} placeholder="Nama muthawwif" /></label>
+                <label><span>WhatsApp Muthawwif</span><Input type="tel" value={support.mutawwif.phone} onChange={(event) => setSupport({ ...support, mutawwif: { ...support.mutawwif, phone: event.target.value } })} placeholder="Contoh: +966 50 123 4567" /></label>
+              </div>
+
+              <div className="admin-subheading"><Hotel /><div><strong>Hotel Makkah</strong><small>Nama dan alamat tempat menginap.</small></div></div>
+              <label><span>Nama hotel Makkah</span><Input value={support.hotels.makkah.name} onChange={(event) => setSupport({ ...support, hotels: { ...support.hotels, makkah: { ...support.hotels.makkah, name: event.target.value } } })} placeholder="Nama hotel" /></label>
+              <label><span>Alamat hotel Makkah</span><textarea value={support.hotels.makkah.address} onChange={(event) => setSupport({ ...support, hotels: { ...support.hotels, makkah: { ...support.hotels.makkah, address: event.target.value } } })} rows={2} placeholder="Alamat lengkap atau lokasi terdekat" /></label>
+
+              <div className="admin-subheading"><Hotel /><div><strong>Hotel Madinah</strong><small>Nama dan alamat tempat menginap.</small></div></div>
+              <label><span>Nama hotel Madinah</span><Input value={support.hotels.madinah.name} onChange={(event) => setSupport({ ...support, hotels: { ...support.hotels, madinah: { ...support.hotels.madinah, name: event.target.value } } })} placeholder="Nama hotel" /></label>
+              <label><span>Alamat hotel Madinah</span><textarea value={support.hotels.madinah.address} onChange={(event) => setSupport({ ...support, hotels: { ...support.hotels, madinah: { ...support.hotels.madinah, address: event.target.value } } })} rows={2} placeholder="Alamat lengkap atau lokasi terdekat" /></label>
+              <Button size="lg" onClick={() => void saveSupport()} disabled={saving !== null || !passcode}>{saving === 'support' ? <Loader2 className="animate-spin" /> : <Check />} Simpan kontak & hotel</Button>
+            </div>
+          </article>}
 
           <article className="admin-card audio-editor">
             <div className="admin-card-heading"><div><small>Audio latar</small><h2>Ganti audio perjalanan</h2></div><FileAudio /></div>

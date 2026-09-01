@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowRight, CalendarDays, CheckCircle2, ChevronDown, Clock3,
-  ExternalLink, MapPin, Plane, Radio, RefreshCw, Search, Sparkles,
+  ContactRound, ExternalLink, Hotel, MapPin, MessageCircle, Plane, Radio, RefreshCw, Search, Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,12 @@ function formatDate(date: string) {
 function findFocusDay(days: ItineraryDay[]) {
   const today = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
   return days.find((day) => day.date === today) ?? (new Date() < departure ? days[0] : days.at(-1));
+}
+
+function whatsappHref(phone: string) {
+  let digits = phone.replace(/\D/g, '');
+  if (digits.startsWith('0')) digits = `62${digits.slice(1)}`;
+  return digits ? `https://wa.me/${digits}` : '';
 }
 
 export function ItineraryApp({ initialData }: { initialData: ItineraryPayload }) {
@@ -63,6 +69,12 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
   const daysToGo = Math.max(0, Math.ceil((departure.getTime() - Date.now()) / 86_400_000));
   const phase = new Date() < departure ? 'Agenda keberangkatan' : new Date() > tripEnd ? 'Perjalanan selesai' : 'Agenda hari ini';
   const cities = ['Semua', ...Array.from(new Set(data.days.map((day) => day.city)))];
+  const supportVisible = [
+    data.support.tourLeader.name, data.support.tourLeader.phone,
+    data.support.mutawwif.name, data.support.mutawwif.phone,
+    data.support.hotels.makkah.name, data.support.hotels.makkah.address,
+    data.support.hotels.madinah.name, data.support.hotels.madinah.address,
+  ].some(Boolean);
 
   const filteredDays = data.days.filter((day) => {
     const haystack = [day.title, day.city, day.weekday, ...day.events.flatMap((event) => [event.title, event.details, event.location])]
@@ -128,6 +140,26 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           <span className="notice-icon"><Sparkles /></span>
           <div><p>Info untuk jemaah</p><strong>{data.notice}</strong></div>
         </section>
+
+        {supportVisible && <section className="support-section" aria-labelledby="support-title">
+          <div className="section-heading">
+            <div><p className="eyebrow">Informasi penting</p><h2 id="support-title">Pendamping & akomodasi</h2><p>Simpan kontak ini dan kenali tempat menginap selama perjalanan.</p></div>
+          </div>
+          <div className="support-grid">
+            {(data.support.tourLeader.name || data.support.tourLeader.phone) && <article className="support-card contact-card">
+              <span className="support-icon"><ContactRound /></span><div><small>Tour Leader</small><h3>{data.support.tourLeader.name || 'Kontak Tour Leader'}</h3>{data.support.tourLeader.phone && <a href={whatsappHref(data.support.tourLeader.phone)} target="_blank" rel="noreferrer"><MessageCircle /> {data.support.tourLeader.phone}</a>}</div>
+            </article>}
+            {(data.support.mutawwif.name || data.support.mutawwif.phone) && <article className="support-card contact-card">
+              <span className="support-icon"><ContactRound /></span><div><small>Muthawwif</small><h3>{data.support.mutawwif.name || 'Kontak Muthawwif'}</h3>{data.support.mutawwif.phone && <a href={whatsappHref(data.support.mutawwif.phone)} target="_blank" rel="noreferrer"><MessageCircle /> {data.support.mutawwif.phone}</a>}</div>
+            </article>}
+            {(data.support.hotels.makkah.name || data.support.hotels.makkah.address) && <article className="support-card hotel-card">
+              <span className="support-icon"><Hotel /></span><div><small>Hotel Makkah</small><h3>{data.support.hotels.makkah.name || 'Akomodasi Makkah'}</h3>{data.support.hotels.makkah.address && <p><MapPin /> {data.support.hotels.makkah.address}</p>}</div>
+            </article>}
+            {(data.support.hotels.madinah.name || data.support.hotels.madinah.address) && <article className="support-card hotel-card">
+              <span className="support-icon"><Hotel /></span><div><small>Hotel Madinah</small><h3>{data.support.hotels.madinah.name || 'Akomodasi Madinah'}</h3>{data.support.hotels.madinah.address && <p><MapPin /> {data.support.hotels.madinah.address}</p>}</div>
+            </article>}
+          </div>
+        </section>}
 
         <section id="jadwal" className="schedule-section">
           <div className="section-heading">

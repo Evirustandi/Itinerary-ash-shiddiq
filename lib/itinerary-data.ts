@@ -22,12 +22,22 @@ export type ItineraryDay = {
   events: ItineraryEvent[];
 };
 
+export type TripSupport = {
+  tourLeader: { name: string; phone: string };
+  mutawwif: { name: string; phone: string };
+  hotels: {
+    makkah: { name: string; address: string };
+    madinah: { name: string; address: string };
+  };
+};
+
 export type ItineraryPayload = {
   tripName: string;
   dateRange: string;
   timezoneNote: string;
   notice: string;
   updatedAt: string;
+  support: TripSupport;
   days: ItineraryDay[];
   flights: Array<{ date: string; flight: string; route: string; time: string }>;
 };
@@ -58,6 +68,14 @@ export const itinerarySeed: ItineraryPayload = {
   timezoneNote: 'Seluruh waktu mengikuti waktu setempat.',
   notice: 'Program dapat berubah mengikuti kondisi di lapangan. Pantau halaman ini untuk pembaruan terbaru.',
   updatedAt: '2026-08-30T00:00:00.000Z',
+  support: {
+    tourLeader: { name: '', phone: '' },
+    mutawwif: { name: '', phone: '' },
+    hotels: {
+      makkah: { name: '', address: '' },
+      madinah: { name: '', address: '' },
+    },
+  },
   flights: [
     { date: '27 Sep 2026', flight: 'EK357G · EK801G', route: 'CGK → DXB → JED', time: '17.40 · 22.30 · 00.10 · 02.05' },
     { date: '8–9 Okt 2026', flight: 'EK810G · EK356G', route: 'MED → DXB → CGK', time: '17.35 · 21.15 · 04.05 · 15.40' },

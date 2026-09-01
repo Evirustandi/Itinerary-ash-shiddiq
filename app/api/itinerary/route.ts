@@ -1,4 +1,4 @@
-import { getItinerary, isAdminPasscode, updateEvent, updateNotice } from '@/lib/itinerary-store';
+import { getItinerary, isAdminPasscode, updateEvent, updateNotice, updateSupport } from '@/lib/itinerary-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ export async function PATCH(request: Request) {
 
   try {
     const body = await request.json() as {
-      kind?: 'event' | 'notice';
+      kind?: 'event' | 'notice' | 'support';
       id?: string;
       value?: string;
       updates?: Record<string, unknown>;
@@ -27,6 +27,8 @@ export async function PATCH(request: Request) {
 
     if (body.kind === 'notice') {
       await updateNotice(String(body.value ?? ''));
+    } else if (body.kind === 'support') {
+      await updateSupport(body.updates);
     } else if (body.kind === 'event' && body.id) {
       await updateEvent(body.id, body.updates ?? {});
     } else {

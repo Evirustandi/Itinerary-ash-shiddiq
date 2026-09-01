@@ -152,6 +152,22 @@ h1 { position: relative; z-index: 1; margin: 22px 0; color: #173d36; font: 500 c
 .notice-icon svg { width: 18px; }
 .notice-card p { margin: 1px 0 5px; color: #92702f; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
 .notice-card strong { color: #314c46; font-size: 14px; line-height: 1.55; }
+.support-section { margin: -36px 0 76px; scroll-margin-top: 20px; }
+.support-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.support-card { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 13px; align-items: start; min-height: 132px; border: 1px solid #d9ceb4; border-radius: 18px; background: rgb(255 253 247 / 88%); padding: 20px; box-shadow: 0 14px 38px rgb(54 44 25 / 6%); }
+.support-icon { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 12px; background: #ead39b; color: #644a18; }
+.support-icon svg { width: 19px; }
+.support-card small { color: #987334; font-size: 9px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+.support-card h3 { margin: 5px 0 10px; color: #213e37; font: 600 21px/1.15 Georgia, serif; }
+.support-card a, .support-card p { display: flex; align-items: flex-start; gap: 7px; margin: 0; color: #62706b; font-size: 12px; font-weight: 700; line-height: 1.55; text-decoration: none; }
+.support-card a { width: fit-content; border-bottom: 1px solid #bf9a4c; color: #276657; }
+.support-card a:hover { color: #123f36; }
+.support-card a svg, .support-card p svg { width: 14px; flex: none; margin-top: 2px; }
+.contact-card { background: #173d36; border-color: #294e47; }
+.contact-card .support-icon { background: rgb(232 195 112 / 15%); color: #efcb79; }
+.contact-card small { color: #d8bc79; }
+.contact-card h3 { color: #fff9eb; }
+.contact-card a { border-color: rgb(238 201 118 / 55%); color: #d9e9e4; }
 
 .schedule-section, .flight-section { scroll-margin-top: 20px; }
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 24px; }
@@ -249,6 +265,7 @@ footer a svg { width: 12px; }
   .event-row:not(:last-child)::after { left: 66px; }
   .flight-card { grid-template-columns: 1fr auto; gap: 10px; padding: 18px; }
   .flight-card p { grid-column: 1 / -1; grid-row: 2; }
+  .support-grid { grid-template-columns: 1fr; }
   footer { align-items: flex-start; flex-direction: column; }
 }
 
@@ -295,6 +312,12 @@ footer a svg { width: 12px; }
 .notice-editor textarea { margin-bottom: 12px; resize: vertical; }
 .admin-message { border: 1px solid #a8cdbf; border-radius: 13px; background: #e0f2eb; padding: 13px 15px; color: #235b4b; font-size: 12px; font-weight: 800; }
 .admin-message.error { border-color: #dfb2a5; background: #fff0eb; color: #8e392b; }
+.admin-subheading { display: flex; align-items: center; gap: 10px; margin-top: 5px; border-top: 1px solid #e3dbc8; padding-top: 17px; }
+.admin-subheading:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+.admin-subheading > svg { width: 18px; color: #a47b31; }
+.admin-subheading > div { display: grid; gap: 2px; }
+.admin-subheading strong { color: #29433d; font-size: 12px; }
+.admin-subheading small { color: #838882; font-size: 10px; }
 .current-audio { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; align-items: center; border: 1px solid #dfd4bb; border-radius: 13px; background: #f8f3e7; padding: 13px; }
 .current-audio > svg { width: 21px; justify-self: center; color: #a87d2e; }
 .current-audio > div { display: grid; gap: 3px; min-width: 0; }

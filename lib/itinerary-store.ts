@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:workers';
-import { itinerarySeed, type EventStatus, type ItineraryPayload } from './itinerary-data';
+import { itinerarySeed, type EventStatus, type ItineraryPayload, type TripSupport } from './itinerary-data';
 
 let initialized = false;
 
@@ -74,11 +74,12 @@ type EventRow = {
 export async function getItinerary(): Promise<ItineraryPayload> {
   await ensureDatabase();
   const db = env.DB;
-  const [dayResult, eventResult, notice] = await Promise.all([
+  const [dayResult, eventResult, notice, supportSetting] = await Promise.all([
     db.prepare('SELECT day_number, date, weekday, title, city, updated_at FROM itinerary_days ORDER BY day_number').all<DayRow>(),
     db.prepare(`SELECT id, day_number, time, title, details, location, status, status_note, sort_order, updated_at
       FROM itinerary_events ORDER BY day_number, sort_order`).all<EventRow>(),
     db.prepare("SELECT value, updated_at FROM site_settings WHERE key = 'notice'").first<{ value: string; updated_at: string }>(),
+    db.prepare("SELECT value, updated_at FROM site_settings WHERE key = 'trip_support'").first<{ value: string; updated_at: string }>(),
   ]);
 
   const eventsByDay = new Map<number, EventRow[]>();
@@ -108,10 +109,19 @@ export async function getItinerary(): Promise<ItineraryPayload> {
     })),
   }));
 
-  const latest = [notice?.updated_at, ...dayResult.results.map((d) => d.updated_at), ...eventResult.results.map((e) => e.updated_at)]
+  let support = itinerarySeed.support;
+  if (supportSetting?.value) {
+    try {
+      support = JSON.parse(supportSetting.value) as TripSupport;
+    } catch {
+      support = itinerarySeed.support;
+    }
+  }
+
+  const latest = [notice?.updated_at, supportSetting?.updated_at, ...dayResult.results.map((d) => d.updated_at), ...eventResult.results.map((e) => e.updated_at)]
     .filter(Boolean).sort().at(-1) ?? itinerarySeed.updatedAt;
 
-  return { ...itinerarySeed, notice: notice?.value ?? itinerarySeed.notice, updatedAt: latest, days };
+  return { ...itinerarySeed, notice: notice?.value ?? itinerarySeed.notice, support, updatedAt: latest, days };
 }
 
 export async function updateEvent(
@@ -145,6 +155,39 @@ export async function updateNotice(value: string) {
   await env.DB.prepare(`INSERT INTO site_settings (key, value, updated_at) VALUES ('notice', ?, ?)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`)
     .bind(value.trim(), now).run();
+}
+
+function cleanText(value: unknown, maxLength: number) {
+  return String(value ?? '').trim().slice(0, maxLength);
+}
+
+export async function updateSupport(value: unknown) {
+  await ensureDatabase();
+  const input = (value && typeof value === 'object' ? value : {}) as Partial<TripSupport>;
+  const support: TripSupport = {
+    tourLeader: {
+      name: cleanText(input.tourLeader?.name, 80),
+      phone: cleanText(input.tourLeader?.phone, 32),
+    },
+    mutawwif: {
+      name: cleanText(input.mutawwif?.name, 80),
+      phone: cleanText(input.mutawwif?.phone, 32),
+    },
+    hotels: {
+      makkah: {
+        name: cleanText(input.hotels?.makkah?.name, 120),
+        address: cleanText(input.hotels?.makkah?.address, 240),
+      },
+      madinah: {
+        name: cleanText(input.hotels?.madinah?.name, 120),
+        address: cleanText(input.hotels?.madinah?.address, 240),
+      },
+    },
+  };
+  const now = new Date().toISOString();
+  await env.DB.prepare(`INSERT INTO site_settings (key, value, updated_at) VALUES ('trip_support', ?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`)
+    .bind(JSON.stringify(support), now).run();
 }
 
 export function isAdminPasscode(candidate: string | null) {
