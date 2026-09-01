@@ -167,7 +167,8 @@ h1 { position: relative; z-index: 1; margin: 22px 0; color: #173d36; font: 500 c
 .contact-card .support-icon { background: rgb(232 195 112 / 15%); color: #efcb79; }
 .contact-card small { color: #d8bc79; }
 .contact-card h3 { color: #fff9eb; }
-.contact-card a { border-color: rgb(238 201 118 / 55%); color: #d9e9e4; }
+.contact-card a { border-color: rgb(238 201 118 / 55%); color: #e7f3ef; font-size: 14px; font-weight: 800; }
+.contact-hint { display: block; margin-top: 7px; color: rgb(217 233 228 / 52%); font-size: 9px; font-weight: 700; letter-spacing: .025em; }
 
 .schedule-section, .flight-section { scroll-margin-top: 20px; }
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 24px; }

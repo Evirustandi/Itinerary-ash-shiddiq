@@ -147,10 +147,10 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           </div>
           <div className="support-grid">
             {(data.support.tourLeader.name || data.support.tourLeader.phone) && <article className="support-card contact-card">
-              <span className="support-icon"><ContactRound /></span><div><small>Tour Leader</small><h3>{data.support.tourLeader.name || 'Kontak Tour Leader'}</h3>{data.support.tourLeader.phone && <a href={whatsappHref(data.support.tourLeader.phone)} target="_blank" rel="noreferrer"><MessageCircle /> {data.support.tourLeader.phone}</a>}</div>
+              <span className="support-icon"><ContactRound /></span><div><small>Tour Leader</small><h3>{data.support.tourLeader.name || 'Kontak Tour Leader'}</h3>{data.support.tourLeader.phone && <><a href={whatsappHref(data.support.tourLeader.phone)} target="_blank" rel="noreferrer"><MessageCircle /> {data.support.tourLeader.phone}</a><span className="contact-hint">Klik nomor untuk menghubungi</span></>}</div>
             </article>}
             {(data.support.mutawwif.name || data.support.mutawwif.phone) && <article className="support-card contact-card">
-              <span className="support-icon"><ContactRound /></span><div><small>Muthawwif</small><h3>{data.support.mutawwif.name || 'Kontak Muthawwif'}</h3>{data.support.mutawwif.phone && <a href={whatsappHref(data.support.mutawwif.phone)} target="_blank" rel="noreferrer"><MessageCircle /> {data.support.mutawwif.phone}</a>}</div>
+              <span className="support-icon"><ContactRound /></span><div><small>Muthawwif</small><h3>{data.support.mutawwif.name || 'Kontak Muthawwif'}</h3>{data.support.mutawwif.phone && <><a href={whatsappHref(data.support.mutawwif.phone)} target="_blank" rel="noreferrer"><MessageCircle /> {data.support.mutawwif.phone}</a><span className="contact-hint">Klik nomor untuk menghubungi</span></>}</div>
             </article>}
             {(data.support.hotels.makkah.name || data.support.hotels.makkah.address) && <article className="support-card hotel-card">
               <span className="support-icon"><Hotel /></span><div><small>Hotel Makkah</small><h3>{data.support.hotels.makkah.name || 'Akomodasi Makkah'}</h3>{data.support.hotels.makkah.address && <p><MapPin /> {data.support.hotels.makkah.address}</p>}</div>
