@@ -32,6 +32,29 @@ async function ensureDatabase() {
 type DayRow = { day_number: number; date: string; weekday: string; title: string; city: string; updated_at: string };
 type EventRow = { id: string; day_number: number; time: string; title: string; details: string; location: string; status: EventStatus; status_note: string; sort_order: number; updated_at: string };
 
+function normalizeGroup27Day(row: DayRow) {
+  if (row.day_number === 11) return { ...row, title: 'Jabal Magnet · Bersama Grup 29' };
+  return { ...row, title: row.title.replace(/Acara Bebas/gi, 'Free Program') };
+}
+
+function normalizeGroup27Event(event: EventRow) {
+  if (event.day_number === 11 && event.sort_order === 3) {
+    return { ...event, details: 'Kegiatan dilaksanakan bersama jemaah Grup 29 September.' };
+  }
+  if ([8, 9, 10].includes(event.day_number) && /acara bebas/i.test(`${event.title} ${event.details}`)) {
+    return {
+      ...event,
+      title: event.time === '15.00' ? 'Jamaah memaksimalkan ibadah masing-masing di Masjid Nabawi' : event.title,
+      details: /acara bebas/i.test(event.details) ? '' : event.details,
+    };
+  }
+  return {
+    ...event,
+    title: event.title.replace(/acara bebas/gi, 'Free Program'),
+    details: event.details.replace(/acara bebas/gi, 'Free Program'),
+  };
+}
+
 function settingKey(kind: 'payload' | 'notice' | 'support', slug: TripSlug) { return `trip:${slug}:${kind}`; }
 
 async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> {
@@ -60,8 +83,8 @@ export async function getItinerary(requestedSlug?: string | null): Promise<Itine
     env.DB.prepare("SELECT value, updated_at FROM site_settings WHERE key = 'trip_support'").first<{ value: string; updated_at: string }>(),
   ]);
   const eventsByDay = new Map<number, EventRow[]>();
-  for (const row of eventResult.results) { const list = eventsByDay.get(row.day_number) ?? []; list.push(row); eventsByDay.set(row.day_number, list); }
-  const days = dayResult.results.map((row) => ({
+  for (const rawRow of eventResult.results) { const row = normalizeGroup27Event(rawRow); const list = eventsByDay.get(row.day_number) ?? []; list.push(row); eventsByDay.set(row.day_number, list); }
+  const days = dayResult.results.map(normalizeGroup27Day).map((row) => ({
     dayNumber: row.day_number, date: row.date, weekday: row.weekday, title: row.title, city: row.city,
     events: (eventsByDay.get(row.day_number) ?? []).map((event) => ({ id: event.id, dayNumber: event.day_number, time: event.time, title: event.title, details: event.details, location: event.location, status: event.status, statusNote: event.status_note, sortOrder: event.sort_order, updatedAt: event.updated_at })),
   }));
