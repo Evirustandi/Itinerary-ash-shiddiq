@@ -92,9 +92,6 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           <img className="site-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" />
         </a>
         <div className="header-actions">
-          <a className="trip-switch" href={data.tripSlug === '27-september-2026' ? '/itinerary/29-september-2026' : '/itinerary/27-september-2026'}>
-            {data.tripSlug === '27-september-2026' ? 'Grup 29 Sep' : 'Grup 27 Sep'}
-          </a>
           <span className="live-pill"><Radio /> Live itinerary</span>
           <Button variant="outline" size="sm" onClick={() => void refresh(true)} disabled={refreshing} aria-label="Segarkan jadwal">
             <RefreshCw className={refreshing ? 'animate-spin' : ''} /> <span className="hidden sm:inline">Segarkan</span>

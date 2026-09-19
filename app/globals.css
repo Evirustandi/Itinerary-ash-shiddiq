@@ -142,8 +142,6 @@ h1 { position: relative; z-index: 1; margin: 22px 0; color: #173d36; font: 500 c
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .site-logo { display: block; width: clamp(185px, 23vw, 285px); height: auto; object-fit: contain; }
 .live-pill svg { width: 14px; height: 14px; }
-.trip-switch { border: 1px solid #d7caa8; border-radius: 999px; background: rgb(255 253 247 / 75%); padding: 8px 11px; color: #49605a; font-size: 12px; font-weight: 800; text-decoration: none; }
-.trip-switch:hover { background: #fffdf7; }
 .hero-grid { display: grid; gap: 20px; padding-top: 30px; }
 .departure-date { margin: 5px 0 0; color: #163b35; font-size: 18px; font-weight: 800; }
 .today-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -413,4 +411,3 @@ footer a svg { width: 12px; }
 .itinerary-theme-indigo .event-dot { border-color: #7782c5; box-shadow: 0 0 0 4px #e4e6f5; }
 .itinerary-theme-indigo .notice-icon,
 .itinerary-theme-indigo .support-icon { background: #dfe2f7; color: #3c4579; }
-.itinerary-theme-indigo .trip-switch { border-color: #c6cbe8; color: #475082; }
