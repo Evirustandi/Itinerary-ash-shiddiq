@@ -282,20 +282,20 @@ export const itinerary29Seed: ItineraryPayload = {
       ['17.00', 'Check-in hotel Makkah', 'Pembagian kamar: 2 double dan 1 quad.', 'Hotel Makkah'],
       ['20.00', 'Umrah pertama', 'Thawaf, sa’i, dan tahallul bersama pembimbing.', 'Masjidil Haram'],
     ]),
-    simpleDay(2, '2026-09-30', 'Rabu', 'Makkah · Acara Bebas', 'Makkah', [
+    simpleDay(2, '2026-09-30', 'Rabu', 'Makkah · Free Program', 'Makkah', [
       ['04.00', 'Shalat Subuh berjamaah', '', 'Masjidil Haram'],
       ['06.00', 'Sarapan dan istirahat', '', 'Hotel Makkah'],
-      ['08.00', 'Acara bebas dan memperbanyak ibadah', 'Waktu dapat digunakan untuk ibadah mandiri dan istirahat.', 'Makkah'],
+      ['08.00', 'Free Program dan memperbanyak ibadah', 'Waktu dapat digunakan untuk ibadah mandiri dan istirahat.', 'Makkah'],
     ]),
     simpleDay(3, '2026-10-01', 'Kamis', 'City Tour Thaif · Umrah Kedua', 'Thaif', [
       ['07.30', 'Berangkat menuju Thaif', 'Berkumpul di lobi hotel.', 'Hotel Makkah'],
       ['12.00', 'City tour Thaif dan miqat', 'Kegiatan mengikuti arahan tim pendamping.', 'Thaif'],
       ['18.00', 'Umrah kedua', 'Thawaf, sa’i, dan tahallul.', 'Masjidil Haram'],
     ]),
-    simpleDay(4, '2026-10-02', 'Jumat', 'Makkah · Acara Bebas', 'Makkah', [
+    simpleDay(4, '2026-10-02', 'Jumat', 'Makkah · Free Program', 'Makkah', [
       ['04.00', 'Shalat Subuh berjamaah', '', 'Masjidil Haram'],
       ['11.00', 'Shalat Jumat berjamaah', '', 'Masjidil Haram'],
-      ['13.00', 'Acara bebas dan ibadah mandiri', '', 'Makkah'],
+      ['13.00', 'Free Program dan ibadah mandiri', '', 'Makkah'],
     ]),
     simpleDay(5, '2026-10-03', 'Sabtu', 'City Tour Jiranah · Umrah Ketiga', 'Makkah', [
       ['07.30', 'City tour Makkah', 'Jabal Tsur, Arafah, Jabal Rahmah, Muzdalifah, Mina, Jamarat, dan Jabal Nur.', 'Makkah'],
@@ -311,17 +311,25 @@ export const itinerary29Seed: ItineraryPayload = {
     simpleDay(7, '2026-10-05', 'Senin', 'Ziarah Madinah', 'Madinah', [
       ['07.30', 'Ziarah dan city tour Madinah', 'Program bersama Grup 27: Masjid Quba, Jabal Uhud, Masjid Khandak, Kebun Kurma, dan Masjid Qiblatain.', 'Madinah'],
       ['12.00', 'Shalat Zuhur dan makan siang', '', 'Madinah'],
-      ['15.00', 'Acara bebas dan memperbanyak ibadah', '', 'Masjid Nabawi'],
+      ['15.00', 'Jamaah memaksimalkan ibadah masing-masing di Masjid Nabawi', '', 'Masjid Nabawi'],
     ]),
     ...[
       ['2026-10-06', 'Selasa'], ['2026-10-07', 'Rabu'], ['2026-10-08', 'Kamis'],
       ['2026-10-09', 'Jumat'], ['2026-10-10', 'Sabtu'],
-    ].map(([date, weekday], index) => simpleDay(index + 8, date, weekday, 'Madinah · Acara Bebas', 'Madinah', [
-      ['04.00', 'Shalat Subuh berjamaah', '', 'Masjid Nabawi'],
-      ['06.00', 'Sarapan dan ibadah mandiri', '', 'Hotel Madinah'],
-      ['08.00', 'Acara bebas dan memperbanyak ibadah', '', 'Madinah'],
-      ['20.00', 'Makan malam dan istirahat', '', 'Hotel Madinah'],
-    ])),
+    ].map(([date, weekday], index) => index === 1
+      ? simpleDay(9, date, weekday, 'Jabal Magnet · Bersama Grup 27', 'Madinah', [
+          ['04.00', 'Tahajud dan Shalat Subuh', '', 'Masjid Nabawi'],
+          ['06.00', 'Sarapan', '', 'Hotel Madinah'],
+          ['07.00', 'Jabal Magnet dan museum Madinah', 'Kegiatan dilaksanakan bersama jemaah Grup 27 September.', 'Madinah'],
+          ['15.00', 'Shalat Asar berjamaah', '', 'Masjid Nabawi'],
+          ['18.00', 'Shalat Magrib, Isya, dan makan malam', '', 'Masjid Nabawi'],
+        ])
+      : simpleDay(index + 8, date, weekday, 'Madinah · Free Program', 'Madinah', [
+          ['04.00', 'Shalat Subuh berjamaah', '', 'Masjid Nabawi'],
+          ['06.00', 'Sarapan dan ibadah mandiri', '', 'Hotel Madinah'],
+          ['08.00', 'Jamaah memaksimalkan ibadah masing-masing di Masjid Nabawi', '', 'Masjid Nabawi'],
+          ['20.00', 'Makan malam dan istirahat', '', 'Hotel Madinah'],
+        ])),
     simpleDay(13, '2026-10-11', 'Ahad', 'Madinah · Kepulangan', 'Madinah', [
       ['04.00', 'Shalat Subuh dan ziarah wada', '', 'Masjid Nabawi'],
       ['06.00', 'Sarapan dan persiapan check-out', '', 'Hotel Madinah'],
