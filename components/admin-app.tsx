@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Check, ContactRound, Eye, EyeOff, FileAudio, Hotel, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { EventStatus, ItineraryEvent, ItineraryPayload, TripSupport } from '@/lib/itinerary-data';
+import { resolveTripSlug, type EventStatus, type ItineraryEvent, type ItineraryPayload, type TripSlug, type TripSupport } from '@/lib/itinerary-data';
 
 type EditFields = Pick<ItineraryEvent, 'time' | 'title' | 'details' | 'location' | 'status' | 'statusNote'>;
 type AudioInfo = { source: 'default' | 'custom'; filename: string; contentType: string; size: number; updatedAt?: string };
 
 export function AdminApp() {
+  const [tripSlug, setTripSlug] = useState<TripSlug>(() => typeof window === 'undefined' ? '27-september-2026' : resolveTripSlug(new URLSearchParams(window.location.search).get('trip')));
   const [data, setData] = useState<ItineraryPayload | null>(null);
   const [passcode, setPasscode] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
@@ -27,13 +28,13 @@ export function AdminApp() {
   const [error, setError] = useState('');
 
   async function loadData() {
-    const response = await fetch('/api/itinerary', { cache: 'no-store' });
+    const response = await fetch(`/api/itinerary?trip=${encodeURIComponent(tripSlug)}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Data itinerary belum dapat dimuat.');
     const payload = await response.json() as ItineraryPayload;
     setData(payload);
     setNotice(payload.notice);
     setSupport(payload.support);
-    if (!selectedId) setSelectedId(payload.days[0]?.events[0]?.id ?? '');
+    setSelectedId((current) => current && payload.days.some((day) => day.events.some((event) => event.id === current)) ? current : payload.days[0]?.events[0]?.id ?? '');
   }
 
   async function loadAudioInfo() {
@@ -48,7 +49,7 @@ export function AdminApp() {
       previewRef.current?.pause();
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
     };
-  }, []);
+  }, [tripSlug]);
 
   const selectedEvent = useMemo(() => data?.days.flatMap((day) => day.events).find((event) => event.id === selectedId), [data, selectedId]);
   useEffect(() => {
@@ -64,7 +65,7 @@ export function AdminApp() {
     const response = await fetch('/api/itinerary', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-admin-passcode': passcode },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...(body as Record<string, unknown>), trip: tripSlug }),
     });
     const payload = await response.json() as ItineraryPayload & { message?: string };
     if (!response.ok) throw new Error(payload.message || 'Pembaruan gagal disimpan.');
@@ -167,7 +168,7 @@ export function AdminApp() {
   return (
     <main className="admin-shell">
       <header className="admin-header">
-        <a href="/itinerary"><ArrowLeft /> Kembali ke itinerary</a>
+        <a href={`/itinerary/${tripSlug}`}><ArrowLeft /> Kembali ke itinerary</a>
         <img className="admin-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" />
         <span><ShieldCheck /> Area pengelola</span>
       </header>
@@ -182,6 +183,12 @@ export function AdminApp() {
         <aside className="admin-sidebar">
           <label><span>Kode pengelola</span><div className="password-field"><Input type={showPasscode ? 'text' : 'password'} value={passcode} onChange={(event) => setPasscode(event.target.value)} placeholder="Masukkan kode" autoComplete="current-password" /><button onClick={() => setShowPasscode((value) => !value)} aria-label={showPasscode ? 'Sembunyikan kode' : 'Tampilkan kode'}>{showPasscode ? <EyeOff /> : <Eye />}</button></div></label>
           <p>Kode hanya dipakai saat menyimpan dan tidak ditampilkan kepada jemaah.</p>
+
+          <div className="admin-divider" />
+          <label><span>Pilih grup</span><select value={tripSlug} onChange={(event) => { setTripSlug(event.target.value as TripSlug); setSelectedId(''); setMessage(''); setError(''); }}>
+            <option value="27-september-2026">Grup 27 September 2026</option>
+            <option value="29-september-2026">Grup 29 September 2026</option>
+          </select></label>
 
           <div className="admin-divider" />
           <label><span>Pilih agenda</span><select value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>

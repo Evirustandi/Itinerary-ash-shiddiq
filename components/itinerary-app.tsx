@@ -9,9 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { EventStatus, ItineraryDay, ItineraryPayload } from '@/lib/itinerary-data';
 
-const departure = new Date('2026-09-27T13:00:00+07:00');
-const tripEnd = new Date('2026-10-09T23:59:59+03:00');
-
 const statusLabel: Record<EventStatus, string> = {
   scheduled: 'Terjadwal',
   now: 'Berlangsung',
@@ -24,7 +21,7 @@ function formatDate(date: string) {
     .format(new Date(`${date}T12:00:00`));
 }
 
-function findFocusDay(days: ItineraryDay[]) {
+function findFocusDay(days: ItineraryDay[], departure: Date) {
   const today = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
   return days.find((day) => day.date === today) ?? (new Date() < departure ? days[0] : days.at(-1));
 }
@@ -45,7 +42,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
   const refresh = useCallback(async (manual = false) => {
     if (manual) setRefreshing(true);
     try {
-      const response = await fetch('/api/itinerary', { cache: 'no-store' });
+      const response = await fetch(`/api/itinerary?trip=${encodeURIComponent(initialData.tripSlug)}`, { cache: 'no-store' });
       if (!response.ok) throw new Error('Gagal memuat');
       const latest = await response.json() as ItineraryPayload;
       setData((current) => {
@@ -57,7 +54,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
     } finally {
       if (manual) setRefreshing(false);
     }
-  }, []);
+  }, [initialData.tripSlug]);
 
   useEffect(() => {
     void refresh();
@@ -65,7 +62,9 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
     return () => window.clearInterval(timer);
   }, [refresh]);
 
-  const focusDay = useMemo(() => findFocusDay(data.days), [data.days]);
+  const departure = useMemo(() => new Date(data.departureAt), [data.departureAt]);
+  const tripEnd = useMemo(() => new Date(data.tripEndAt), [data.tripEndAt]);
+  const focusDay = useMemo(() => findFocusDay(data.days, departure), [data.days, departure]);
   const daysToGo = Math.max(0, Math.ceil((departure.getTime() - Date.now()) / 86_400_000));
   const phase = new Date() < departure ? 'Agenda keberangkatan' : new Date() > tripEnd ? 'Perjalanan selesai' : 'Agenda hari ini';
   const cities = ['Semua', ...Array.from(new Set(data.days.map((day) => day.city)))];
@@ -87,12 +86,15 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
   }).format(new Date(data.updatedAt));
 
   return (
-    <main className="min-h-screen">
+    <main className={`min-h-screen itinerary-theme-${data.theme}`}>
       <header className="site-header">
         <a href="/" className="brand-lockup" aria-label="Kembali ke halaman awal Ash-Shiddiq Tour & Travel">
           <img className="site-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" />
         </a>
         <div className="header-actions">
+          <a className="trip-switch" href={data.tripSlug === '27-september-2026' ? '/itinerary/29-september-2026' : '/itinerary/27-september-2026'}>
+            {data.tripSlug === '27-september-2026' ? 'Grup 29 Sep' : 'Grup 27 Sep'}
+          </a>
           <span className="live-pill"><Radio /> Live itinerary</span>
           <Button variant="outline" size="sm" onClick={() => void refresh(true)} disabled={refreshing} aria-label="Segarkan jadwal">
             <RefreshCw className={refreshing ? 'animate-spin' : ''} /> <span className="hidden sm:inline">Segarkan</span>
@@ -109,7 +111,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
             <div className="countdown-card">
               <div>
                 <p className="mini-label">Keberangkatan</p>
-                <p className="departure-date">Ahad, 27 September 2026</p>
+                <p className="departure-date">{data.departureLabel}</p>
               </div>
               <div className="countdown-number">{daysToGo}<small>{daysToGo === 1 ? 'hari lagi' : 'hari lagi'}</small></div>
             </div>
@@ -140,6 +142,10 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           <span className="notice-icon"><Sparkles /></span>
           <div><p>Info untuk jemaah</p><strong>{data.notice}</strong></div>
         </section>
+
+        {data.highlights?.length ? <section className="trip-highlights" aria-label="Ringkasan perjalanan">
+          {data.highlights.map((item) => <p key={item}><CheckCircle2 /> {item}</p>)}
+        </section> : null}
 
         {supportVisible && <section className="support-section" aria-labelledby="support-title">
           <div className="section-heading">
@@ -204,7 +210,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
         </section>
 
         <section className="flight-section">
-          <div className="section-heading compact"><div><p className="eyebrow">Penerbangan</p><h2>Jadwal Emirates</h2></div><Plane /></div>
+          <div className="section-heading compact"><div><p className="eyebrow">Penerbangan</p><h2>Jadwal penerbangan</h2></div><Plane /></div>
           <div className="flight-grid">
             {data.flights.map((flight) => (
               <article key={flight.flight} className="flight-card">
@@ -217,7 +223,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
 
         <footer>
           <div><img className="footer-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" /><p><small>PT. Hasan Berkah Wisata · PPIU 09102303094760001</small></p></div>
-          <a href="/admin">Halaman pengelola <ExternalLink /></a>
+          <a href={`/admin?trip=${data.tripSlug}`}>Halaman pengelola <ExternalLink /></a>
         </footer>
       </div>
 

@@ -2,9 +2,9 @@ import { getItinerary, isAdminPasscode, updateEvent, updateNotice, updateSupport
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const data = await getItinerary();
+    const data = await getItinerary(new URL(request.url).searchParams.get('trip'));
     return Response.json(data, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Unable to load itinerary', error);
@@ -19,6 +19,7 @@ export async function PATCH(request: Request) {
 
   try {
     const body = await request.json() as {
+      trip?: string;
       kind?: 'event' | 'notice' | 'support';
       id?: string;
       value?: string;
@@ -26,16 +27,16 @@ export async function PATCH(request: Request) {
     };
 
     if (body.kind === 'notice') {
-      await updateNotice(String(body.value ?? ''));
+      await updateNotice(body.trip, String(body.value ?? ''));
     } else if (body.kind === 'support') {
-      await updateSupport(body.updates);
+      await updateSupport(body.trip, body.updates);
     } else if (body.kind === 'event' && body.id) {
-      await updateEvent(body.id, body.updates ?? {});
+      await updateEvent(body.trip, body.id, body.updates ?? {});
     } else {
       return Response.json({ message: 'Permintaan pembaruan tidak lengkap.' }, { status: 400 });
     }
 
-    return Response.json(await getItinerary());
+    return Response.json(await getItinerary(body.trip));
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Pembaruan gagal disimpan.';
     return Response.json({ message }, { status: 400 });

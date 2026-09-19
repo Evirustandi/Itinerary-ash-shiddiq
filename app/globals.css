@@ -142,6 +142,8 @@ h1 { position: relative; z-index: 1; margin: 22px 0; color: #173d36; font: 500 c
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .site-logo { display: block; width: clamp(185px, 23vw, 285px); height: auto; object-fit: contain; }
 .live-pill svg { width: 14px; height: 14px; }
+.trip-switch { border: 1px solid #d7caa8; border-radius: 999px; background: rgb(255 253 247 / 75%); padding: 8px 11px; color: #49605a; font-size: 12px; font-weight: 800; text-decoration: none; }
+.trip-switch:hover { background: #fffdf7; }
 .hero-grid { display: grid; gap: 20px; padding-top: 30px; }
 .departure-date { margin: 5px 0 0; color: #163b35; font-size: 18px; font-weight: 800; }
 .today-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -152,6 +154,9 @@ h1 { position: relative; z-index: 1; margin: 22px 0; color: #173d36; font: 500 c
 .notice-icon svg { width: 18px; }
 .notice-card p { margin: 1px 0 5px; color: #92702f; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
 .notice-card strong { color: #314c46; font-size: 14px; line-height: 1.55; }
+.trip-highlights { display: grid; gap: 8px; margin: -58px 0 76px; border: 1px solid #cdd0e4; border-radius: 18px; background: rgb(248 248 255 / 86%); padding: 18px 22px; }
+.trip-highlights p { display: flex; align-items: flex-start; gap: 9px; margin: 0; color: #454c78; font-size: 14px; font-weight: 700; line-height: 1.5; }
+.trip-highlights svg { width: 17px; flex: none; margin-top: 2px; color: #6671b7; }
 .support-section { margin: -36px 0 76px; scroll-margin-top: 20px; }
 .support-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .support-card { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 13px; align-items: start; min-height: 132px; border: 1px solid #d9ceb4; border-radius: 18px; background: rgb(255 253 247 / 88%); padding: 20px; box-shadow: 0 14px 38px rgb(54 44 25 / 6%); }
@@ -355,6 +360,16 @@ footer a svg { width: 12px; }
 .welcome-meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0 22px; }
 .welcome-meta span { display: flex; align-items: center; gap: 8px; border: 1px solid rgb(255 255 255 / 18%); border-radius: 999px; background: rgb(255 255 255 / 7%); padding: 9px 12px; color: #e9eee9; font-size: 11px; font-weight: 800; backdrop-filter: blur(12px); }
 .welcome-meta svg { width: 14px; color: #e4bc61; }
+.journey-options { display: grid; max-width: 650px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 30px 0 18px; }
+.journey-option { display: grid; gap: 8px; border: 1px solid rgb(255 255 255 / 20%); border-radius: 16px; background: rgb(255 255 255 / 9%); padding: 18px; color: #fff; text-align: left; backdrop-filter: blur(12px); cursor: pointer; transition: transform .2s ease, background .2s ease; }
+.journey-option:hover { background: rgb(229 187 98 / 18%); transform: translateY(-2px); }
+.journey-option.indigo { border-color: rgb(172 184 255 / 45%); background: rgb(87 95 157 / 22%); }
+.journey-option:disabled { cursor: wait; opacity: .75; }
+.journey-option > span, .journey-option small { display: flex; align-items: center; gap: 7px; }
+.journey-option > span { color: #e7c46f; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.journey-option strong { font: 600 21px/1.2 Georgia, serif; }
+.journey-option small { color: #dce7e3; font-size: 12px; font-weight: 800; }
+.journey-option svg { width: 15px; }
 .welcome-cta { display: inline-flex; align-items: center; gap: 28px; border: 0; border-radius: 14px; background: #e5bb62; padding: 15px 18px; color: #15362f; font-size: 14px; font-weight: 900; text-decoration: none; box-shadow: 0 17px 45px rgb(0 0 0 / 22%); transition: transform .2s ease, background .2s ease; cursor: pointer; }
 .welcome-cta:hover { background: #f0cd82; transform: translateY(-2px); }
 .welcome-cta:disabled { cursor: wait; opacity: .82; }
@@ -373,4 +388,29 @@ footer a svg { width: 12px; }
   .welcome-content { padding-top: 38px; }
   .welcome-logo { width: min(360px, 82vw); }
   .welcome-kicker { margin-top: 42px; }
+  .journey-options { grid-template-columns: 1fr; }
 }
+
+.itinerary-theme-indigo { min-height: 100vh; background: radial-gradient(circle at 85% 8%, rgb(109 119 190 / 18%), transparent 25rem), linear-gradient(135deg, #f9f8f2 0%, #f0f1fa 58%, #e8e9f4 100%); }
+.itinerary-theme-indigo .today-card,
+.itinerary-theme-indigo .contact-card,
+.itinerary-theme-indigo .flight-card { background: #30375f; }
+.itinerary-theme-indigo .date-block,
+.itinerary-theme-indigo .city-filters button.active,
+.itinerary-theme-indigo .city-filters button:hover { background: #454d82; }
+.itinerary-theme-indigo .primary-link { background: #c7cdf8; color: #252c55; }
+.itinerary-theme-indigo .primary-link:hover { background: #dce0ff; }
+.itinerary-theme-indigo .day-card[open] { border-color: #8f98d2; }
+.itinerary-theme-indigo .eyebrow,
+.itinerary-theme-indigo .mini-label,
+.itinerary-theme-indigo .day-title small,
+.itinerary-theme-indigo .event-row > time,
+.itinerary-theme-indigo .event-row small { color: #6873b5; }
+.itinerary-theme-indigo .today-card .mini-label,
+.itinerary-theme-indigo .timeline-preview time,
+.itinerary-theme-indigo .flight-card small,
+.itinerary-theme-indigo .flight-card time { color: #cbd1ff; }
+.itinerary-theme-indigo .event-dot { border-color: #7782c5; box-shadow: 0 0 0 4px #e4e6f5; }
+.itinerary-theme-indigo .notice-icon,
+.itinerary-theme-indigo .support-icon { background: #dfe2f7; color: #3c4579; }
+.itinerary-theme-indigo .trip-switch { border-color: #c6cbe8; color: #475082; }

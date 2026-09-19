@@ -32,8 +32,14 @@ export type TripSupport = {
 };
 
 export type ItineraryPayload = {
+  tripSlug: string;
   tripName: string;
   dateRange: string;
+  departureAt: string;
+  tripEndAt: string;
+  departureLabel: string;
+  theme: 'emerald' | 'indigo';
+  highlights?: string[];
   timezoneNote: string;
   notice: string;
   updatedAt: string;
@@ -63,8 +69,13 @@ const makeEvent = (
 });
 
 export const itinerarySeed: ItineraryPayload = {
+  tripSlug: '27-september-2026',
   tripName: 'Umrah 12 Hari Ash‑Shiddiq',
   dateRange: '27 September–9 Oktober 2026',
+  departureAt: '2026-09-27T13:00:00+07:00',
+  tripEndAt: '2026-10-09T23:59:59+03:00',
+  departureLabel: 'Ahad, 27 September 2026',
+  theme: 'emerald',
   timezoneNote: 'Seluruh waktu mengikuti waktu setempat.',
   notice: 'Program dapat berubah mengikuti kondisi di lapangan. Pantau halaman ini untuk pembaruan terbaru.',
   updatedAt: '2026-08-30T00:00:00.000Z',
@@ -222,3 +233,115 @@ export const itinerarySeed: ItineraryPayload = {
     },
   ],
 };
+
+const simpleDay = (
+  dayNumber: number,
+  date: string,
+  weekday: string,
+  title: string,
+  city: string,
+  events: Array<[string, string, string?, string?]>,
+): ItineraryDay => ({
+  dayNumber, date, weekday, title, city,
+  events: events.map(([time, eventTitle, details = '', location = ''], index) =>
+    makeEvent(dayNumber, index + 1, time, eventTitle, details, location)),
+});
+
+export const itinerary29Seed: ItineraryPayload = {
+  tripSlug: '29-september-2026',
+  tripName: 'Umrah Grup 29 September Ash‑Shiddiq',
+  dateRange: '29 September–12 Oktober 2026',
+  departureAt: '2026-09-29T09:10:00+07:00',
+  tripEndAt: '2026-10-12T10:25:00+07:00',
+  departureLabel: 'Selasa, 29 September 2026',
+  theme: 'indigo',
+  timezoneNote: 'Seluruh waktu mengikuti waktu setempat.',
+  notice: 'Jadwal dapat menyesuaikan kondisi di lapangan. Pantau halaman ini untuk informasi terbaru dari tim Ash‑Shiddiq.',
+  updatedAt: '2026-09-19T00:00:00.000Z',
+  highlights: [
+    'Akomodasi: 2 kamar double dan 1 kamar quad',
+    'Hotel Makkah: check-in 29 September · check-out 4 Oktober 2026',
+    'Hotel Madinah: check-in 4 Oktober · check-out 11 Oktober 2026',
+  ],
+  support: {
+    tourLeader: { name: '', phone: '' },
+    mutawwif: { name: '', phone: '' },
+    hotels: {
+      makkah: { name: '', address: '' },
+      madinah: { name: '', address: '' },
+    },
+  },
+  flights: [
+    { date: '29 Sep 2026', flight: 'SV 817', route: 'Jakarta → Jeddah', time: '09.10—14.40' },
+    { date: '11–12 Okt 2026', flight: 'SV 820', route: 'Madinah → Jakarta', time: '20.25—10.25 (+1)' },
+  ],
+  days: [
+    simpleDay(1, '2026-09-29', 'Selasa', 'Tiba di Jeddah · Umrah Pertama', 'Makkah', [
+      ['09.10', 'Penerbangan SV 817 menuju Jeddah', 'Persiapan perjalanan dan niat ihram mengikuti arahan pembimbing.', 'Jakarta'],
+      ['14.40', 'Tiba di Jeddah', 'Proses kedatangan lalu perjalanan menuju hotel.', 'Bandara King Abdul Aziz'],
+      ['Sore', 'Check-in hotel Makkah', 'Pembagian kamar: 2 double dan 1 quad.', 'Hotel Makkah'],
+      ['Malam', 'Umrah pertama', 'Thawaf, sa’i, dan tahallul bersama pembimbing.', 'Masjidil Haram'],
+    ]),
+    simpleDay(2, '2026-09-30', 'Rabu', 'Makkah · Acara Bebas', 'Makkah', [
+      ['Subuh', 'Shalat Subuh berjamaah', '', 'Masjidil Haram'],
+      ['Pagi', 'Sarapan dan istirahat', '', 'Hotel Makkah'],
+      ['Seharian', 'Acara bebas dan memperbanyak ibadah', 'Waktu dapat digunakan untuk ibadah mandiri dan istirahat.', 'Makkah'],
+    ]),
+    simpleDay(3, '2026-10-01', 'Kamis', 'City Tour Thaif · Umrah Kedua', 'Thaif', [
+      ['07.30', 'Berangkat menuju Thaif', 'Berkumpul di lobi hotel.', 'Hotel Makkah'],
+      ['Siang', 'City tour Thaif dan miqat', 'Kegiatan mengikuti arahan tim pendamping.', 'Thaif'],
+      ['Malam', 'Umrah kedua', 'Thawaf, sa’i, dan tahallul.', 'Masjidil Haram'],
+    ]),
+    simpleDay(4, '2026-10-02', 'Jumat', 'Makkah · Acara Bebas', 'Makkah', [
+      ['Subuh', 'Shalat Subuh berjamaah', '', 'Masjidil Haram'],
+      ['Jumat', 'Shalat Jumat berjamaah', '', 'Masjidil Haram'],
+      ['Seharian', 'Acara bebas dan ibadah mandiri', '', 'Makkah'],
+    ]),
+    simpleDay(5, '2026-10-03', 'Sabtu', 'City Tour Jiranah · Umrah Ketiga', 'Makkah', [
+      ['07.30', 'City tour Makkah', 'Jabal Tsur, Arafah, Jabal Rahmah, Muzdalifah, Mina, Jamarat, dan Jabal Nur.', 'Makkah'],
+      ['Siang', 'Miqat di Jiranah', 'Persiapan umrah bersama pembimbing.', 'Jiranah'],
+      ['Malam', 'Umrah ketiga', 'Thawaf, sa’i, dan tahallul.', 'Masjidil Haram'],
+    ]),
+    simpleDay(6, '2026-10-04', 'Ahad', 'Thawaf Wada · Menuju Madinah', 'Perjalanan', [
+      ['Subuh', 'Shalat Subuh dan Thawaf Wada', '', 'Masjidil Haram'],
+      ['Pagi', 'Sarapan dan check-out hotel Makkah', '', 'Hotel Makkah'],
+      ['Siang', 'Berangkat menuju Madinah', 'Perjalanan mengikuti arahan tim pendamping.', 'Makkah → Madinah'],
+      ['Malam', 'Check-in hotel Madinah', 'Makan malam, pembagian kamar, dan istirahat.', 'Hotel Madinah'],
+    ]),
+    simpleDay(7, '2026-10-05', 'Senin', 'Ziarah Madinah', 'Madinah', [
+      ['Pagi', 'Ziarah dan city tour Madinah', 'Program bersama Grup 27: Masjid Quba, Jabal Uhud, Masjid Khandak, Kebun Kurma, dan Masjid Qiblatain.', 'Madinah'],
+      ['Siang', 'Shalat Zuhur dan makan siang', '', 'Madinah'],
+      ['Sore', 'Acara bebas dan memperbanyak ibadah', '', 'Masjid Nabawi'],
+    ]),
+    ...[
+      ['2026-10-06', 'Selasa'], ['2026-10-07', 'Rabu'], ['2026-10-08', 'Kamis'],
+      ['2026-10-09', 'Jumat'], ['2026-10-10', 'Sabtu'],
+    ].map(([date, weekday], index) => simpleDay(index + 8, date, weekday, 'Madinah · Acara Bebas', 'Madinah', [
+      ['Subuh', 'Shalat Subuh berjamaah', '', 'Masjid Nabawi'],
+      ['Pagi', 'Sarapan dan ibadah mandiri', '', 'Hotel Madinah'],
+      ['Seharian', 'Acara bebas dan memperbanyak ibadah', '', 'Madinah'],
+      ['Malam', 'Makan malam dan istirahat', '', 'Hotel Madinah'],
+    ])),
+    simpleDay(13, '2026-10-11', 'Ahad', 'Madinah · Kepulangan', 'Madinah', [
+      ['Subuh', 'Shalat Subuh dan ziarah wada', '', 'Masjid Nabawi'],
+      ['Pagi', 'Sarapan dan persiapan check-out', '', 'Hotel Madinah'],
+      ['Siang', 'Check-out hotel Madinah', 'Bagasi dan dokumen diperiksa sebelum menuju bandara.', 'Hotel Madinah'],
+      ['20.25', 'Penerbangan SV 820 menuju Jakarta', '', 'Bandara Madinah'],
+    ]),
+    simpleDay(14, '2026-10-12', 'Senin', 'Tiba di Jakarta', 'Jakarta', [
+      ['10.25', 'Tiba di Jakarta', 'Rangkaian perjalanan Grup 29 September selesai. Semoga ibadah diterima Allah SWT.', 'Jakarta'],
+    ]),
+  ],
+};
+
+export const itinerarySeeds = {
+  '27-september-2026': itinerarySeed,
+  '29-september-2026': itinerary29Seed,
+} as const;
+
+export type TripSlug = keyof typeof itinerarySeeds;
+export const defaultTripSlug: TripSlug = '27-september-2026';
+
+export function resolveTripSlug(value: string | null | undefined): TripSlug {
+  return value === '29-september-2026' ? value : defaultTripSlug;
+}

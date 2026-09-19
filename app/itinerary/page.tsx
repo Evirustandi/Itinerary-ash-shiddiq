@@ -1,6 +1,5 @@
-import { ItineraryApp } from '@/components/itinerary-app';
-import { itinerarySeed } from '@/lib/itinerary-data';
+import { redirect } from 'next/navigation';
 
 export default function ItineraryPage() {
-  return <ItineraryApp initialData={itinerarySeed} />;
+  redirect('/itinerary/27-september-2026');
 }
