@@ -33,13 +33,13 @@ type DayRow = { day_number: number; date: string; weekday: string; title: string
 type EventRow = { id: string; day_number: number; time: string; title: string; details: string; location: string; status: EventStatus; status_note: string; sort_order: number; updated_at: string };
 
 function normalizeGroup27Day(row: DayRow) {
-  if (row.day_number === 11) return { ...row, title: 'Jabal Magnet · Bersama Grup 29' };
+  if (row.day_number === 11) return { ...row, title: 'Jabal Magnet' };
   return { ...row, title: row.title.replace(/Acara Bebas/gi, 'Free Program') };
 }
 
 function normalizeGroup27Event(event: EventRow) {
   if (event.day_number === 11 && event.sort_order === 3) {
-    return { ...event, details: 'Kegiatan dilaksanakan bersama jemaah Grup 29 September.' };
+    return { ...event, details: '' };
   }
   if ([8, 9, 10].includes(event.day_number) && /acara bebas/i.test(`${event.title} ${event.details}`)) {
     return {
@@ -68,6 +68,11 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
   try { if (payloadSetting?.value) payload = { ...payload, ...JSON.parse(payloadSetting.value) as ItineraryPayload }; } catch { /* seed is the safe fallback */ }
   try { if (supportSetting?.value) payload.support = JSON.parse(supportSetting.value) as TripSupport; } catch { /* seed is the safe fallback */ }
   payload.notice = noticeSetting?.value ?? payload.notice;
+  payload.days = payload.days.map((day) => day.title.includes('Jabal Magnet') ? {
+    ...day,
+    title: 'Jabal Magnet',
+    events: day.events.map((event) => event.title.includes('Jabal Magnet') ? { ...event, details: '' } : event),
+  } : day);
   payload.updatedAt = [payload.updatedAt, payloadSetting?.updated_at, noticeSetting?.updated_at, supportSetting?.updated_at].filter(Boolean).sort().at(-1) ?? payload.updatedAt;
   return payload;
 }

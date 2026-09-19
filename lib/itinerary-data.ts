@@ -206,11 +206,11 @@ export const itinerarySeed: ItineraryPayload = {
       ],
     },
     {
-      dayNumber: 11, date: '2026-10-07', weekday: 'Rabu', title: 'Jabal Magnet · Bersama Grup 29', city: 'Madinah',
+      dayNumber: 11, date: '2026-10-07', weekday: 'Rabu', title: 'Jabal Magnet', city: 'Madinah',
       events: [
         makeEvent(11, 1, '04.00', 'Tahajud dan Shalat Subuh', '', 'Masjid Nabawi'),
         makeEvent(11, 2, '06.00', 'Sarapan', '', 'Hotel Madinah'),
-        makeEvent(11, 3, '07.00', 'Jabal Magnet dan museum Madinah', 'Kegiatan dilaksanakan bersama jemaah Grup 29 September.', 'Madinah'),
+        makeEvent(11, 3, '07.00', 'Jabal Magnet dan museum Madinah', '', 'Madinah'),
         makeEvent(11, 4, '15.00', 'Shalat Asar berjamaah', '', 'Masjid Nabawi'),
         makeEvent(11, 5, '18.00', 'Shalat Magrib, Isya, dan makan malam', '', 'Masjid Nabawi'),
       ],
@@ -317,10 +317,10 @@ export const itinerary29Seed: ItineraryPayload = {
       ['2026-10-06', 'Selasa'], ['2026-10-07', 'Rabu'], ['2026-10-08', 'Kamis'],
       ['2026-10-09', 'Jumat'], ['2026-10-10', 'Sabtu'],
     ].map(([date, weekday], index) => index === 1
-      ? simpleDay(9, date, weekday, 'Jabal Magnet · Bersama Grup 27', 'Madinah', [
+      ? simpleDay(9, date, weekday, 'Jabal Magnet', 'Madinah', [
           ['04.00', 'Tahajud dan Shalat Subuh', '', 'Masjid Nabawi'],
           ['06.00', 'Sarapan', '', 'Hotel Madinah'],
-          ['07.00', 'Jabal Magnet dan museum Madinah', 'Kegiatan dilaksanakan bersama jemaah Grup 27 September.', 'Madinah'],
+          ['07.00', 'Jabal Magnet dan museum Madinah', '', 'Madinah'],
           ['15.00', 'Shalat Asar berjamaah', '', 'Masjid Nabawi'],
           ['18.00', 'Shalat Magrib, Isya, dan makan malam', '', 'Masjid Nabawi'],
         ])
