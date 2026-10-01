@@ -188,6 +188,7 @@ export function AdminApp() {
           <label><span>Pilih grup</span><select value={tripSlug} onChange={(event) => { setTripSlug(event.target.value as TripSlug); setSelectedId(''); setMessage(''); setError(''); }}>
             <option value="27-september-2026">Grup 27 September 2026</option>
             <option value="29-september-2026">Grup 29 September 2026</option>
+            <option value="1-november-2026">Grup 1 November 2026</option>
           </select></label>
 
           <div className="admin-divider" />

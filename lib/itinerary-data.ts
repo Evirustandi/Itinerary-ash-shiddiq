@@ -38,7 +38,7 @@ export type ItineraryPayload = {
   departureAt: string;
   tripEndAt: string;
   departureLabel: string;
-  theme: 'emerald' | 'indigo';
+  theme: 'emerald' | 'indigo' | 'saffron';
   highlights?: string[];
   timezoneNote: string;
   notice: string;
@@ -342,14 +342,114 @@ export const itinerary29Seed: ItineraryPayload = {
   ],
 };
 
+export const itinerary1NovemberSeed: ItineraryPayload = {
+  tripSlug: '1-november-2026',
+  tripName: 'Umrah 9 Hari Grup 1 November Ash‑Shiddiq',
+  dateRange: '1–9 November 2026',
+  departureAt: '2026-11-01T08:45:00+07:00',
+  tripEndAt: '2026-11-09T07:15:00+07:00',
+  departureLabel: 'Ahad, 1 November 2026',
+  theme: 'saffron',
+  timezoneNote: 'Seluruh waktu mengikuti waktu setempat.',
+  notice: 'Program dapat berubah mengikuti kondisi di lapangan. Pantau halaman ini untuk pembaruan terbaru dari tim Ash‑Shiddiq.',
+  updatedAt: '2026-10-01T00:00:00.000Z',
+  highlights: [
+    'Program umrah 9 hari · 1–9 November 2026',
+    'Perjalanan Makkah–Madinah dan Madinah–Jeddah menggunakan kereta cepat',
+    'Penerbangan Qatar Airways melalui Doha',
+  ],
+  support: {
+    tourLeader: { name: '', phone: '' },
+    mutawwif: { name: '', phone: '' },
+    hotels: {
+      makkah: { name: '', address: '' },
+      madinah: { name: '', address: '' },
+    },
+  },
+  flights: [
+    { date: '1 Nov 2026', flight: 'QR 959 · QR 1186', route: 'Jakarta → Doha → Jeddah', time: '08.45 · 13.05 · 15.20 · 18.00' },
+    { date: '8–9 Nov 2026', flight: 'QR 1193 · QR 958', route: 'Jeddah → Doha → Jakarta', time: '12.30 · 14.50 · 18.35 · 07.15 (+1)' },
+  ],
+  days: [
+    simpleDay(1, '2026-11-01', 'Ahad', 'Jakarta → Jeddah → Makkah · Umrah Pertama', 'Makkah', [
+      ['04.30', 'Berkumpul di Bandara Soekarno–Hatta', 'Technical meeting dan persiapan keberangkatan, lima jam sebelum penerbangan.', 'Bandara Soekarno–Hatta'],
+      ['08.45', 'Terbang menuju Doha dan Jeddah', 'Penerbangan Qatar Airways QR 959 dan QR 1186.', 'Jakarta'],
+      ['18.00', 'Tiba di Bandara King Abdul Aziz', 'Persiapan perjalanan menuju hotel di Makkah.', 'Jeddah'],
+      ['20.00', 'Check-in hotel Makkah dan makan malam', 'Pembagian kamar, makan malam, dan persiapan ibadah.', 'Hotel Makkah'],
+      ['22.00', 'Umrah pertama', 'Shalat Magrib dan Isya di Masjidil Haram, dilanjutkan thawaf, sa’i, dan tahallul.', 'Masjidil Haram'],
+    ]),
+    simpleDay(2, '2026-11-02', 'Senin', 'Makkah · Ziarah Dalam', 'Makkah', [
+      ['04.00', 'Tahajud dan Shalat Subuh berjamaah', '', 'Masjidil Haram'],
+      ['07.30', 'Memperbanyak ibadah', '', 'Masjidil Haram'],
+      ['12.00', 'Shalat Zuhur berjamaah', '', 'Masjidil Haram'],
+      ['15.00', 'Shalat Asar dan Free Program', '', 'Masjidil Haram'],
+      ['16.00', 'Ziarah sekitar Masjidil Haram', 'Maulid Nabi, Sumur Zamzam, Masjid Jin, Jannatul Mu’alla, dan sekitarnya.', 'Makkah'],
+      ['18.00', 'Shalat Magrib dan Isya berjamaah', '', 'Masjidil Haram'],
+      ['20.00', 'Makan malam dan istirahat', '', 'Hotel Makkah'],
+    ]),
+    simpleDay(3, '2026-11-03', 'Selasa', 'City Tour Jiranah · Umrah Kedua', 'Makkah', [
+      ['04.00', 'Shalat Subuh berjamaah', '', 'Masjidil Haram'],
+      ['06.00', 'Sarapan', '', 'Hotel Makkah'],
+      ['07.30', 'City tour Makkah dan miqat Jiranah', 'Jabal Tsur, Arafah, Jabal Rahmah, Muzdalifah, Masjid Namirah, Mina, Jamarat, dan Jabal Nur. Mengambil miqat di Jiranah.', 'Makkah · Jiranah'],
+      ['12.00', 'Makan siang, Zuhur, dan Umrah kedua', 'Dilanjutkan thawaf, sa’i, dan tahallul.', 'Masjidil Haram'],
+      ['15.00', 'Shalat Asar dan Free Program', '', 'Masjidil Haram'],
+      ['18.00', 'Shalat Magrib dan Isya berjamaah', '', 'Masjidil Haram'],
+      ['20.00', 'Makan malam dan istirahat', '', 'Hotel Makkah'],
+    ]),
+    simpleDay(4, '2026-11-04', 'Rabu', 'City Tour Thaif · Umrah Ketiga', 'Thaif', [
+      ['04.00', 'Tahajud dan Shalat Subuh berjamaah', '', 'Masjidil Haram'],
+      ['06.00', 'Sarapan', '', 'Hotel Makkah'],
+      ['07.30', 'City tour Thaif dan miqat Qarnul Manazil', 'Kereta gantung, pabrik parfum, Masjid Khu’, Masjid Addas, dan Masjid Abdullah bin Abbas. Mengambil miqat untuk umrah ketiga.', 'Thaif'],
+      ['16.00', 'Umrah ketiga', 'Shalat Magrib berjamaah dilanjutkan thawaf, sa’i, dan tahallul.', 'Masjidil Haram'],
+      ['20.00', 'Makan malam dan persiapan koper', 'Persiapan menuju Madinah pada hari berikutnya.', 'Hotel Makkah'],
+    ]),
+    simpleDay(5, '2026-11-05', 'Kamis', 'Makkah → Madinah', 'Perjalanan', [
+      ['04.00', 'Shalat Subuh dan Thawaf Wada', '', 'Masjidil Haram'],
+      ['06.00', 'Sarapan', '', 'Hotel Makkah'],
+      ['14.00', 'Check-out dan berangkat menuju Madinah', '', 'Hotel Makkah'],
+      ['15.00', 'Menuju stasiun kereta cepat', 'Perjalanan Makkah–Madinah menggunakan Fast Train.', 'Stasiun kereta cepat'],
+      ['19.00', 'Tiba di Madinah dan check-in hotel', 'Makan malam, pembagian kunci kamar, lalu ziarah pertama ke Masjid Nabawi.', 'Madinah'],
+      ['21.00', 'Istirahat', '', 'Hotel Madinah'],
+    ]),
+    simpleDay(6, '2026-11-06', 'Jumat', 'Madinah · Ziarah Dalam', 'Madinah', [
+      ['04.00', 'Tahajud dan Shalat Subuh berjamaah', '', 'Masjid Nabawi'],
+      ['06.00', 'Sarapan', '', 'Hotel Madinah'],
+      ['07.30', 'Ziarah dalam', 'Ziarah Baqi, makam Rasulullah ﷺ, Abu Bakar RA, Umar RA, dan Raudhah. Waktu tentatif.', 'Masjid Nabawi'],
+      ['12.00', 'Shalat Jumat dan makan siang', 'Dilanjutkan makan siang di hotel.', 'Masjid Nabawi'],
+      ['13.00', 'Ziarah sekitar Masjid Nabawi', 'Masjid Abu Bakar, Masjid Ghumamah, dan sekitarnya.', 'Madinah'],
+      ['15.00', 'Jamaah memaksimalkan ibadah masing-masing di Masjid Nabawi', '', 'Masjid Nabawi'],
+      ['19.00', 'Shalat Magrib, Isya, dan makan malam', '', 'Masjid Nabawi'],
+    ]),
+    simpleDay(7, '2026-11-07', 'Sabtu', 'Madinah · City Tour', 'Madinah', [
+      ['04.00', 'Tahajud dan Shalat Subuh berjamaah', '', 'Masjid Nabawi'],
+      ['06.00', 'Sarapan', '', 'Hotel Madinah'],
+      ['07.00', 'City tour dan ziarah Madinah', 'Masjid Quba, Jabal Uhud, Masjid Khandak, Kebun Kurma, dan Masjid Qiblatain.', 'Madinah'],
+      ['12.00', 'Shalat Zuhur dan makan siang', '', 'Madinah'],
+      ['15.00', 'Jamaah memaksimalkan ibadah masing-masing di Masjid Nabawi', '', 'Masjid Nabawi'],
+      ['18.00', 'Shalat Magrib, Isya, dan makan malam', '', 'Masjid Nabawi'],
+    ]),
+    simpleDay(8, '2026-11-08', 'Ahad', 'Madinah → Jeddah', 'Perjalanan', [
+      ['04.00', 'Tahajud, Shalat Subuh, dan Ziarah Wada', '', 'Masjid Nabawi'],
+      ['06.00', 'Sarapan', '', 'Hotel Madinah'],
+      ['07.30', 'Check-out dan menuju Bandara Jeddah', 'Perjalanan menggunakan kereta cepat (Fast Train).', 'Madinah → Jeddah'],
+      ['11.00', 'Tiba di Bandara King Abdul Aziz', '', 'Jeddah'],
+      ['12.30', 'Terbang menuju Doha dan Jakarta', 'Penerbangan Qatar Airways QR 1193 dan QR 958.', 'Bandara King Abdul Aziz'],
+    ]),
+    simpleDay(9, '2026-11-09', 'Senin', 'Tiba di Jakarta', 'Jakarta', [
+      ['07.15', 'Tiba di Bandara Soekarno–Hatta', 'Rangkaian umrah 9 hari bersama Ash‑Shiddiq Tour & Travel selesai. Semoga ibadah diterima Allah SWT.', 'Jakarta'],
+    ]),
+  ],
+};
+
 export const itinerarySeeds = {
   '27-september-2026': itinerarySeed,
   '29-september-2026': itinerary29Seed,
+  '1-november-2026': itinerary1NovemberSeed,
 } as const;
 
 export type TripSlug = keyof typeof itinerarySeeds;
 export const defaultTripSlug: TripSlug = '27-september-2026';
 
 export function resolveTripSlug(value: string | null | undefined): TripSlug {
-  return value === '29-september-2026' ? value : defaultTripSlug;
+  return value && value in itinerarySeeds ? value as TripSlug : defaultTripSlug;
 }

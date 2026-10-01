@@ -100,7 +100,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
       </header>
 
       <div id="atas" className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
-        <section className="hero-grid">
+        <section className={`hero-grid itinerary-hero-${data.theme}`}>
           <div className="hero-panel">
             <p className="eyebrow">{data.tripName} · {data.dateRange}</p>
             <h1>Perjalanan suci,<br />selangkah lebih tenang.</h1>

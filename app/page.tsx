@@ -37,6 +37,9 @@ export default function WelcomePage() {
           <button className="journey-option indigo" onClick={() => void beginJourney('29-september-2026')} disabled={Boolean(entering)}>
             <span><CalendarDays /> Grup 29 September</span><strong>29 Sep—12 Okt 2026</strong><small>{entering === '29-september-2026' ? <><Loader2 className="animate-spin" /> Membuka…</> : <>Lihat itinerary <ArrowRight /></>}</small>
           </button>
+          <button className="journey-option saffron" onClick={() => void beginJourney('1-november-2026')} disabled={Boolean(entering)}>
+            <span><CalendarDays /> Grup 1 November</span><strong>1—9 Nov 2026</strong><small>{entering === '1-november-2026' ? <><Loader2 className="animate-spin" /> Membuka…</> : <>Lihat itinerary <ArrowRight /></>}</small>
+          </button>
         </div>
         <div className="welcome-meta"><span><Headphones /> Audio lembut tersedia</span></div>
         <p className="audio-consent">Audio dimulai setelah tombol ditekan dan dapat dimatikan kapan saja.</p>

@@ -362,6 +362,7 @@ footer a svg { width: 12px; }
 .journey-option { display: grid; gap: 8px; border: 1px solid rgb(255 255 255 / 20%); border-radius: 16px; background: rgb(255 255 255 / 9%); padding: 18px; color: #fff; text-align: left; backdrop-filter: blur(12px); cursor: pointer; transition: transform .2s ease, background .2s ease; }
 .journey-option:hover { background: rgb(229 187 98 / 18%); transform: translateY(-2px); }
 .journey-option.indigo { border-color: rgb(172 184 255 / 45%); background: rgb(87 95 157 / 22%); }
+.journey-option.saffron { border-color: rgb(255 191 101 / 52%); background: rgb(125 67 42 / 32%); }
 .journey-option:disabled { cursor: wait; opacity: .75; }
 .journey-option > span, .journey-option small { display: flex; align-items: center; gap: 7px; }
 .journey-option > span { color: #e7c46f; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
@@ -411,3 +412,52 @@ footer a svg { width: 12px; }
 .itinerary-theme-indigo .event-dot { border-color: #7782c5; box-shadow: 0 0 0 4px #e4e6f5; }
 .itinerary-theme-indigo .notice-icon,
 .itinerary-theme-indigo .support-icon { background: #dfe2f7; color: #3c4579; }
+
+.itinerary-theme-saffron { min-height: 100vh; background: radial-gradient(circle at 16% 5%, rgb(224 148 63 / 22%), transparent 28rem), radial-gradient(circle at 92% 23%, rgb(35 71 128 / 16%), transparent 30rem), linear-gradient(145deg, #fff8ed 0%, #f7eee0 48%, #eef1f7 100%); }
+.itinerary-theme-saffron .site-header { max-width: 1240px; }
+.itinerary-theme-saffron .hero-grid { gap: 0; border: 1px solid #213b67; border-radius: 30px; overflow: hidden; box-shadow: 0 25px 80px rgb(35 48 75 / 16%); }
+.itinerary-theme-saffron .hero-panel { min-height: 500px; border: 0; border-radius: 0; background: #1d335d; color: #fffaf1; box-shadow: none; }
+.itinerary-theme-saffron .hero-panel::after { right: -70px; bottom: -65px; width: 330px; height: 330px; border-color: rgb(243 179 81 / 23%); }
+.itinerary-theme-saffron .hero-panel h1 { color: #fff8eb; font-family: Georgia, serif; }
+.itinerary-theme-saffron .hero-panel .hero-copy { color: #d8e1f1; }
+.itinerary-theme-saffron .hero-panel .eyebrow,
+.itinerary-theme-saffron .hero-panel .mini-label { color: #f3c16c; }
+.itinerary-theme-saffron .hero-panel .departure-date { color: #fff7e6; }
+.itinerary-theme-saffron .hero-panel .countdown-card { border-color: rgb(255 255 255 / 16%); background: rgb(255 255 255 / 7%); }
+.itinerary-theme-saffron .hero-panel .countdown-number { color: #f3c16c; }
+.itinerary-theme-saffron .today-card { min-height: 500px; border-radius: 0; background: #d99036; color: #1c2b4d; box-shadow: none; }
+.itinerary-theme-saffron .today-card::before { opacity: .14; background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 17px 17px; }
+.itinerary-theme-saffron .today-card .mini-label,
+.itinerary-theme-saffron .timeline-preview time,
+.itinerary-theme-saffron .updated { color: #5a3b17; }
+.itinerary-theme-saffron .day-badge,
+.itinerary-theme-saffron .info-chip { border-color: rgb(28 43 77 / 20%); background: rgb(255 251 239 / 20%); color: #1c2b4d; }
+.itinerary-theme-saffron .primary-link { background: #1d335d; color: #fff8ed; }
+.itinerary-theme-saffron .primary-link:hover { background: #29487f; }
+.itinerary-theme-saffron .trip-highlights { border-color: #e2bb79; background: rgb(255 249 236 / 92%); }
+.itinerary-theme-saffron .trip-highlights p { color: #6e4823; }
+.itinerary-theme-saffron .trip-highlights svg { color: #bc762b; }
+.itinerary-theme-saffron .notice-icon,
+.itinerary-theme-saffron .support-icon { background: #f6dfae; color: #724514; }
+.itinerary-theme-saffron .date-block,
+.itinerary-theme-saffron .city-filters button.active,
+.itinerary-theme-saffron .city-filters button:hover { background: #1d335d; }
+.itinerary-theme-saffron .day-card[open] { border-color: #d99036; }
+.itinerary-theme-saffron .eyebrow,
+.itinerary-theme-saffron .mini-label,
+.itinerary-theme-saffron .day-title small,
+.itinerary-theme-saffron .event-row > time,
+.itinerary-theme-saffron .event-row small { color: #a96521; }
+.itinerary-theme-saffron .event-dot { border-color: #d99036; box-shadow: 0 0 0 4px #fff1d9; }
+.itinerary-theme-saffron .contact-card,
+.itinerary-theme-saffron .flight-card { background: #1d335d; }
+.itinerary-theme-saffron .flight-card small,
+.itinerary-theme-saffron .flight-card time { color: #f5ca7d; }
+
+@media (min-width: 1024px) {
+  .itinerary-theme-saffron .hero-grid { grid-template-columns: 1.16fr .84fr; }
+}
+
+@media (max-width: 760px) {
+  .itinerary-theme-saffron .hero-grid { border-radius: 22px; }
+}
