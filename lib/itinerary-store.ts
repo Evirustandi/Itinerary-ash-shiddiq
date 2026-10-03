@@ -123,6 +123,30 @@ export async function updateEvent(requestedSlug: string | null | undefined, id: 
     .bind(updates.time?.trim() || current.time, updates.title?.trim() || current.title, updates.details?.trim() ?? current.details, updates.location?.trim() ?? current.location, updates.status ?? current.status, updates.statusNote?.trim() ?? current.status_note, now, id).run();
 }
 
+export async function updateDay(requestedSlug: string | null | undefined, dayNumber: number, updates: Record<string, unknown>) {
+  await ensureDatabase();
+  const slug = resolveTripSlug(requestedSlug);
+  const now = new Date().toISOString();
+  const title = cleanText(updates.title, 160);
+  const city = cleanText(updates.city, 80);
+  if (!title) throw new Error('Judul hari tidak boleh kosong.');
+  if (slug !== '27-september-2026') {
+    const payload = await getSecondaryItinerary(slug);
+    const day = payload.days.find((item) => item.dayNumber === dayNumber);
+    if (!day) throw new Error('Hari tidak ditemukan.');
+    day.title = title;
+    if (city) day.city = city;
+    payload.updatedAt = now;
+    await env.DB.prepare(`INSERT INTO site_settings (key, value, updated_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`)
+      .bind(settingKey('payload', slug), JSON.stringify(payload), now).run();
+    return;
+  }
+  const current = await env.DB.prepare('SELECT * FROM itinerary_days WHERE day_number = ?').bind(dayNumber).first<DayRow>();
+  if (!current) throw new Error('Hari tidak ditemukan.');
+  await env.DB.prepare('UPDATE itinerary_days SET title = ?, city = ?, updated_at = ? WHERE day_number = ?')
+    .bind(title, city || current.city, now, dayNumber).run();
+}
+
 export async function updateNotice(requestedSlug: string | null | undefined, value: string) {
   await ensureDatabase();
   const slug = resolveTripSlug(requestedSlug); const key = slug === '27-september-2026' ? 'notice' : settingKey('notice', slug); const now = new Date().toISOString();
