@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, CalendarDays, Check, ContactRound, Eye, EyeOff, FileAudio, Hotel, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Check, ContactRound, Eye, EyeOff, FileAudio, Hotel, Loader2, Megaphone, Pencil, Play, RotateCcw, ShieldCheck, Square, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { resolveTripSlug, type EventStatus, type ItineraryEvent, type ItineraryPayload, type TripSlug, type TripSupport } from '@/lib/itinerary-data';
@@ -15,6 +15,8 @@ export function AdminApp() {
   const [passcode, setPasscode] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
   const [selectedId, setSelectedId] = useState('');
+  const [editOpen, setEditOpen] = useState(false);
+  const [sectionEditor, setSectionEditor] = useState<'day' | 'notice' | 'support' | 'audio' | null>(null);
   const [fields, setFields] = useState<EditFields | null>(null);
   const [notice, setNotice] = useState('');
   const [support, setSupport] = useState<TripSupport | null>(null);
@@ -89,6 +91,7 @@ export function AdminApp() {
     try {
       await patch({ kind: 'event', id: selectedId, updates: fields });
       setMessage('Agenda berhasil diperbarui dan langsung tampil untuk jemaah.');
+      setEditOpen(false);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
     finally { setSaving(null); }
   }
@@ -98,6 +101,7 @@ export function AdminApp() {
     try {
       await patch({ kind: 'day', dayNumber: selectedDay, updates: dayFields });
       setMessage('Judul hari berhasil diperbarui dan langsung tampil untuk jemaah.');
+      setSectionEditor(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
     finally { setSaving(null); }
   }
@@ -107,6 +111,7 @@ export function AdminApp() {
     try {
       await patch({ kind: 'notice', value: notice });
       setMessage('Pengumuman berhasil diperbarui.');
+      setSectionEditor(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
     finally { setSaving(null); }
   }
@@ -117,6 +122,7 @@ export function AdminApp() {
     try {
       await patch({ kind: 'support', updates: support });
       setMessage('Kontak pendamping dan informasi hotel berhasil diperbarui.');
+      setSectionEditor(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Informasi perjalanan gagal disimpan.'); }
     finally { setSaving(null); }
   }
@@ -128,6 +134,34 @@ export function AdminApp() {
     previewUrlRef.current = '';
     setPreviewing(false);
   }
+
+  function closeSectionEditor() {
+    if (saving) return;
+    setSectionEditor(null);
+    if (data) { setNotice(data.notice); setSupport(data.support); }
+    if (selectedDayData) setDayFields({ title: selectedDayData.title, city: selectedDayData.city });
+    stopPreview();
+  }
+
+  useEffect(() => {
+    if (!editOpen && !sectionEditor) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const modal = document.querySelector<HTMLElement>('.admin-modal');
+    modal?.querySelector<HTMLElement>('input, select, textarea, button')?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') { event.preventDefault(); setEditOpen(false); closeSectionEditor(); }
+      if (event.key !== 'Tab' || !modal) return;
+      const items = [...modal.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]')];
+      const first = items[0], last = items.at(-1);
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener('keydown', onKeyDown); previousFocus?.focus(); };
+  }, [editOpen, sectionEditor]);
 
   async function previewAudio() {
     if (!audioFile) return;
@@ -199,12 +233,13 @@ export function AdminApp() {
       </section>
 
       <section className="admin-grid">
+        <div className="admin-commandbar"><div><span className="status-light" /><div><small>GRUP AKTIF DIPILIH</small><strong>{data?.tripName ?? 'Memuat perjalanan…'}</strong></div></div><span><ShieldCheck /> Jadwal aktif untuk jemaah</span></div>
         <aside className="admin-sidebar">
           <label><span>Kode pengelola</span><div className="password-field"><Input type={showPasscode ? 'text' : 'password'} value={passcode} onChange={(event) => setPasscode(event.target.value)} placeholder="Masukkan kode" autoComplete="current-password" /><button onClick={() => setShowPasscode((value) => !value)} aria-label={showPasscode ? 'Sembunyikan kode' : 'Tampilkan kode'}>{showPasscode ? <EyeOff /> : <Eye />}</button></div></label>
           <p>Kode hanya dipakai saat menyimpan dan tidak ditampilkan kepada jemaah.</p>
 
           <div className="admin-divider" />
-          <label><span>Pilih grup</span><select value={tripSlug} onChange={(event) => { setTripSlug(event.target.value as TripSlug); setSelectedId(''); setMessage(''); setError(''); }}>
+          <label><span>Pilih grup</span><select value={tripSlug} onChange={(event) => { setTripSlug(event.target.value as TripSlug); setSelectedId(''); setEditOpen(false); setSectionEditor(null); setMessage(''); setError(''); }}>
             <option value="27-september-2026">Grup 27 September 2026</option>
             <option value="29-september-2026">Grup 29 September 2026</option>
             <option value="1-november-2026">Grup 1 November 2026</option>
@@ -226,9 +261,9 @@ export function AdminApp() {
             <div className="admin-day-strip">{data?.days.map((day) => <button key={day.dayNumber} className={selectedDay === day.dayNumber ? 'active' : ''} onClick={() => { setSelectedDay(day.dayNumber); setSelectedId(day.events[0]?.id ?? ''); }}><small>Hari {String(day.dayNumber).padStart(2, '0')}</small><strong>{day.title}</strong></button>)}</div>
           </section>
           <article id="admin-agenda" className="admin-card">
-            <div className="admin-card-heading"><div><small>Agenda terpilih</small><h2>{selectedEvent?.title ?? 'Memuat agenda…'}</h2></div><Save /></div>
-            {selectedDayData && <div className="admin-event-picker" aria-label="Pilih agenda hari ini">{selectedDayData.events.map((event) => <button key={event.id} className={selectedId === event.id ? 'active' : ''} onClick={() => setSelectedId(event.id)}><time>{event.time}</time><span>{event.title}</span><small>{event.status === 'now' ? 'Berlangsung' : event.status === 'done' ? 'Selesai' : event.status === 'changed' ? 'Berubah' : 'Terjadwal'}</small></button>)}</div>}
-            {fields && <div className="admin-form">
+            <div className="admin-card-heading"><div><small>Timeline agenda harian</small><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat agenda…'}</h2><p>Pilih agenda untuk meninjau atau memperbarui rinciannya.</p></div><button className="admin-edit-btn" onClick={() => { if (selectedEvent) setFields({ time: selectedEvent.time, title: selectedEvent.title, details: selectedEvent.details, location: selectedEvent.location, status: selectedEvent.status, statusNote: selectedEvent.statusNote }); setEditOpen(true); }} disabled={!selectedEvent}><Pencil /> Edit agenda terpilih</button></div>
+            {selectedDayData && <div className="admin-event-picker" aria-label="Pilih agenda hari ini">{selectedDayData.events.map((event) => <button key={event.id} className={`admin-agenda-row status-${event.status} ${selectedId === event.id ? 'active' : ''}`} onClick={() => setSelectedId(event.id)}><time>{event.time}<small>WAKTU</small></time><span><strong>{event.title}</strong><small>{event.location || event.details || 'Agenda perjalanan'}</small></span><em>{event.status === 'now' ? 'Berlangsung' : event.status === 'done' ? 'Selesai' : event.status === 'changed' ? 'Berubah' : 'Terjadwal'}</em><Pencil /></button>)}</div>}
+            {fields && editOpen && <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setEditOpen(false); }}><div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-edit-title"><div className="admin-modal-header"><div><p className="eyebrow">Edit agenda perjalanan</p><h2 id="admin-edit-title">{selectedEvent?.title}</h2></div><button onClick={() => setEditOpen(false)} aria-label="Tutup editor agenda"><X /></button></div><div className="admin-form">
               <div className="two-fields">
                 <label><span>Waktu</span><Input value={fields.time} onChange={(event) => setFields({ ...fields, time: event.target.value })} /></label>
                 <label><span>Status</span><select value={fields.status} onChange={(event) => setFields({ ...fields, status: event.target.value as EventStatus })}><option value="scheduled">Terjadwal</option><option value="now">Berlangsung</option><option value="done">Selesai</option><option value="changed">Berubah</option></select></label>
@@ -237,31 +272,32 @@ export function AdminApp() {
               <label><span>Lokasi</span><Input value={fields.location} onChange={(event) => setFields({ ...fields, location: event.target.value })} /></label>
               <label><span>Rincian</span><textarea value={fields.details} onChange={(event) => setFields({ ...fields, details: event.target.value })} rows={3} /></label>
               <label><span>Catatan perubahan</span><textarea value={fields.statusNote} onChange={(event) => setFields({ ...fields, statusNote: event.target.value })} rows={2} placeholder="Contoh: keberangkatan bus mundur 30 menit" /></label>
-              <Button size="lg" onClick={() => void saveEvent()} disabled={saving !== null || !passcode}>{saving === 'event' ? <Loader2 className="animate-spin" /> : <Check />} Simpan agenda</Button>
-            </div>}
+              {!passcode && <p className="admin-auth-hint">Masukkan kode pengelola di panel sebelum menyimpan.</p>}
+              <div className="admin-modal-actions"><Button variant="outline" onClick={() => setEditOpen(false)}>Batal</Button><Button size="lg" onClick={() => void saveEvent()} disabled={saving !== null || !passcode}>{saving === 'event' ? <Loader2 className="animate-spin" /> : <Check />} Simpan agenda</Button></div>
+            </div></div></div>}
           </article>
 
           <article id="admin-day" className="admin-card">
-            <div className="admin-card-heading"><div><small>Judul hari</small><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat…'}</h2></div><CalendarDays /></div>
-            {selectedDayData && <div className="admin-form">
+            <div className="admin-card-heading"><div><small>Judul hari</small><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat…'}</h2><p>{selectedDayData?.city} · Atur nama dan kota untuk hari ini.</p></div><button className="admin-edit-btn" onClick={() => setSectionEditor('day')} disabled={!selectedDayData}><Pencil /> Edit judul hari</button></div>
+            {selectedDayData && sectionEditor === 'day' && <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeSectionEditor(); }}><div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-day-title"><div className="admin-modal-header"><div><p className="eyebrow">Jadwal perjalanan</p><h2 id="admin-day-title">Edit judul hari</h2></div><button onClick={closeSectionEditor} aria-label="Tutup editor judul hari"><X /></button></div><div className="admin-form">
               <label><span>Pilih hari</span><select value={selectedDay} onChange={(event) => setSelectedDay(Number(event.target.value))}>
                 {data?.days.map((day) => <option key={day.dayNumber} value={day.dayNumber}>Hari {day.dayNumber} · {day.title}</option>)}
               </select></label>
               <label><span>Judul hari</span><Input value={dayFields.title} onChange={(event) => setDayFields({ ...dayFields, title: event.target.value })} /></label>
               <label><span>Kota</span><Input value={dayFields.city} onChange={(event) => setDayFields({ ...dayFields, city: event.target.value })} /></label>
-              <Button size="lg" onClick={() => void saveDay()} disabled={saving !== null || !passcode || !dayFields.title.trim()}>{saving === 'day' ? <Loader2 className="animate-spin" /> : <Check />} Simpan judul hari</Button>
-            </div>}
+              {!passcode && <p className="admin-auth-hint">Masukkan kode pengelola di panel sebelum menyimpan.</p>}
+              <div className="admin-modal-actions"><Button variant="outline" onClick={closeSectionEditor}>Batal</Button><Button size="lg" onClick={() => void saveDay()} disabled={saving !== null || !passcode || !dayFields.title.trim()}>{saving === 'day' ? <Loader2 className="animate-spin" /> : <Check />} Simpan judul hari</Button></div>
+            </div></div></div>}
           </article>
 
           <article id="admin-notice" className="admin-card notice-editor">
-            <div className="admin-card-heading"><div><small>Pengumuman utama</small><h2>Pesan untuk semua jemaah</h2></div><Megaphone /></div>
-            <textarea value={notice} onChange={(event) => setNotice(event.target.value)} rows={3} />
-            <Button variant="outline" onClick={() => void saveNotice()} disabled={saving !== null || !passcode}>{saving === 'notice' ? <Loader2 className="animate-spin" /> : <Megaphone />} Perbarui pengumuman</Button>
+            <div className="admin-card-heading"><div><small>Pengumuman utama</small><h2>Pesan untuk semua jemaah</h2><p>{data?.notice || 'Belum ada pengumuman.'}</p></div><button className="admin-edit-btn" onClick={() => setSectionEditor('notice')}><Pencil /> Edit pengumuman</button></div>
+            {sectionEditor === 'notice' && <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeSectionEditor(); }}><div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-notice-title"><div className="admin-modal-header"><div><p className="eyebrow">Informasi jemaah</p><h2 id="admin-notice-title">Edit pengumuman</h2></div><button onClick={closeSectionEditor} aria-label="Tutup editor pengumuman"><X /></button></div><div className="admin-form"><label><span>Pesan yang tampil untuk jemaah</span><textarea value={notice} onChange={(event) => setNotice(event.target.value)} rows={5} /></label>{!passcode && <p className="admin-auth-hint">Masukkan kode pengelola di panel sebelum menyimpan.</p>}<div className="admin-modal-actions"><Button variant="outline" onClick={closeSectionEditor}>Batal</Button><Button onClick={() => void saveNotice()} disabled={saving !== null || !passcode}>{saving === 'notice' ? <Loader2 className="animate-spin" /> : <Check />} Simpan pengumuman</Button></div></div></div></div>}
           </article>
 
           {support && <article id="admin-support" className="admin-card support-editor">
-            <div className="admin-card-heading"><div><small>Kontak & akomodasi</small><h2>Pendamping dan hotel</h2></div><ContactRound /></div>
-            <div className="admin-form">
+            <div className="admin-card-heading"><div><small>Kontak & akomodasi</small><h2>Pendamping dan hotel</h2><p>{data?.support.tourLeader.name || 'Tour Leader belum diisi'} · {data?.support.hotels.makkah.name || 'Hotel Makkah belum diisi'}</p></div><button className="admin-edit-btn" onClick={() => setSectionEditor('support')}><Pencil /> Edit informasi</button></div>
+            {sectionEditor === 'support' && <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeSectionEditor(); }}><div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-support-title"><div className="admin-modal-header"><div><p className="eyebrow">Kontak & akomodasi</p><h2 id="admin-support-title">Edit pendamping dan hotel</h2></div><button onClick={closeSectionEditor} aria-label="Tutup editor pendamping dan hotel"><X /></button></div><div className="admin-form">
               <div className="admin-subheading"><ContactRound /><div><strong>Pendamping jemaah</strong><small>Nomor akan menjadi tombol WhatsApp.</small></div></div>
               <div className="two-fields">
                 <label><span>Nama Tour Leader</span><Input value={support.tourLeader.name} onChange={(event) => setSupport({ ...support, tourLeader: { ...support.tourLeader, name: event.target.value } })} placeholder="Contoh: Ustadz Ahmad" /></label>
@@ -277,8 +313,9 @@ export function AdminApp() {
               <div className="admin-subheading"><Hotel /><div><strong>Hotel Madinah</strong><small>Nama dan alamat tempat menginap.</small></div></div>
               <label><span>Nama hotel Madinah</span><Input value={support.hotels.madinah.name} onChange={(event) => setSupport({ ...support, hotels: { ...support.hotels, madinah: { ...support.hotels.madinah, name: event.target.value } } })} placeholder="Nama hotel" /></label>
               <label><span>Alamat hotel Madinah</span><textarea value={support.hotels.madinah.address} onChange={(event) => setSupport({ ...support, hotels: { ...support.hotels, madinah: { ...support.hotels.madinah, address: event.target.value } } })} rows={2} placeholder="Alamat lengkap atau lokasi terdekat" /></label>
-              <Button size="lg" onClick={() => void saveSupport()} disabled={saving !== null || !passcode}>{saving === 'support' ? <Loader2 className="animate-spin" /> : <Check />} Simpan kontak & hotel</Button>
-            </div>
+              {!passcode && <p className="admin-auth-hint">Masukkan kode pengelola di panel sebelum menyimpan.</p>}
+              <div className="admin-modal-actions"><Button variant="outline" onClick={closeSectionEditor}>Batal</Button><Button size="lg" onClick={() => void saveSupport()} disabled={saving !== null || !passcode}>{saving === 'support' ? <Loader2 className="animate-spin" /> : <Check />} Simpan kontak & hotel</Button></div>
+            </div></div></div>}
           </article>}
 
           <article id="admin-audio" className="admin-card audio-editor">

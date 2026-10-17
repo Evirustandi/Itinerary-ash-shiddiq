@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AmbientAudioProvider } from '@/components/ambient-audio';
 import './globals.css';
+import './stitch-layout.css';
 
 const siteOrigin = process.env.SITE_URL ?? 'http://localhost:3000';
 

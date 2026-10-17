@@ -76,7 +76,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
   ].some(Boolean);
 
   const filteredDays = data.days.filter((day) => {
-    const haystack = [day.title, day.city, day.weekday, ...day.events.flatMap((event) => [event.title, event.details, event.location])]
+    const haystack = [day.title, day.city, day.weekday, day.date, formatDate(day.date), `hari ${day.dayNumber}`, ...day.events.flatMap((event) => [event.title, event.details, event.location])]
       .join(' ').toLowerCase();
     return (city === 'Semua' || day.city === city) && haystack.includes(query.trim().toLowerCase());
   });
@@ -93,7 +93,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           <span className="brand-caption">Itinerary jemaah<small>Ash‑Shiddiq Tour & Travel</small></span>
         </a>
         <div className="header-actions">
-          <span className="live-pill"><Radio /> Live itinerary</span>
+          <span className="live-pill"><Radio /> Diperbarui otomatis</span>
           <Button variant="outline" size="sm" onClick={() => void refresh(true)} disabled={refreshing} aria-label="Segarkan jadwal">
             <RefreshCw className={refreshing ? 'animate-spin' : ''} /> <span className="hidden sm:inline">Segarkan</span>
           </Button>
@@ -106,38 +106,29 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
       <div id="atas" className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
         <section className={`hero-grid itinerary-hero-${data.theme}`}>
           <div className="hero-panel">
-            <p className="eyebrow">Itinerary resmi · {data.dateRange}</p>
+            <p className="eyebrow"><span className="status-light" /> Jadwal perjalanan rombongan · {data.dateRange}</p>
             <h1>{data.tripName}</h1>
-            <p className="hero-copy">Jadwal terbaru untuk jemaah Ash‑Shiddiq, lengkap dengan waktu berkumpul, agenda, lokasi, dan perubahan dari tim pendamping.</p>
+            <p className="hero-copy">Panduan waktu, tempat berkumpul, dan kegiatan ibadah yang selalu diperbarui oleh tim pendamping.</p>
             <div className="countdown-card">
               <div>
                 <p className="mini-label">Keberangkatan</p>
                 <p className="departure-date">{data.departureLabel}</p>
               </div>
-              <div className="countdown-number">{daysToGo}<small>{daysToGo === 1 ? 'hari lagi' : 'hari lagi'}</small></div>
+              <div className="countdown-number">{new Date() < departure ? <>{daysToGo}<small>hari lagi</small></> : <small>{new Date() > tripEnd ? 'Perjalanan selesai' : 'Sedang berlangsung'}</small>}</div>
             </div>
           </div>
-
-          {focusDay && (
-            <div className="today-card">
-              <div className="today-heading">
-                <div><p className="mini-label text-[#d8c48e]">{phase}</p><h2>{focusDay.title}</h2></div>
-                <span className="day-badge">Hari {focusDay.dayNumber}</span>
-              </div>
-              <div className="today-meta">
-                <div className="info-chip"><CalendarDays /> {formatDate(focusDay.date)}</div>
-                <div className="info-chip"><MapPin /> {focusDay.city}</div>
-              </div>
-              <div className="timeline-preview">
-                {focusDay.events.slice(0, 4).map((event) => (
-                  <div key={event.id}><time>{event.time}</time><span>{event.title}</span></div>
-                ))}
-              </div>
-              <a href={`#hari-${focusDay.dayNumber}`} className="primary-link">Lihat agenda lengkap <ArrowRight /></a>
-              <p className="updated"><Clock3 /> Terakhir diperbarui {updatedLabel} WIB</p>
-            </div>
-          )}
+          <div className="journey-facts-card">
+            <p className="mini-label">Rincian perjalanan</p>
+            {data.flights.map((flight) => <div key={flight.flight} className="journey-flight"><Plane /><div><small>{flight.date} · {flight.flight}</small><strong>{flight.route}</strong><span>{flight.time}</span></div></div>)}
+            <div className="journey-facts-footer"><CalendarDays /> {data.days.length} hari perjalanan <span>•</span> {data.timezoneNote}</div>
+          </div>
         </section>
+
+        {focusDay && <section className="focus-day-card" aria-label={phase}>
+          <div className="focus-day-heading"><span className="day-badge">Hari {focusDay.dayNumber}</span><div><p className="eyebrow">{phase} · {formatDate(focusDay.date)} · {focusDay.city}</p><h2>{focusDay.title}</h2></div><a href={`#hari-${focusDay.dayNumber}`}>Lihat agenda lengkap <ArrowRight /></a></div>
+          <div className="focus-day-events">{focusDay.events.slice(0, 4).map((event) => <div key={event.id}><time>{event.time}</time><span>{event.title}</span></div>)}</div>
+          <p className="updated"><Clock3 /> Terakhir diperbarui {updatedLabel} WIB</p>
+        </section>}
 
         <section className="notice-card" aria-label="Pengumuman perjalanan">
           <span className="notice-icon"><Sparkles /></span>
@@ -175,14 +166,14 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           </div>
 
           <div className="schedule-controls">
-            <label className="search-field"><Search /><span className="sr-only">Cari agenda</span><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kegiatan atau lokasi…" /></label>
+            <label className="search-field"><span className="search-label">Cari jadwal</span><span className="search-input-wrap"><Search /><Input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tanggal, kota, atau kegiatan…" /></span></label>
             <div className="city-filters" aria-label="Filter kota">
               {cities.map((option) => <button key={option} className={city === option ? 'active' : ''} onClick={() => setCity(option)}>{option}</button>)}
             </div>
           </div>
 
           <nav className="day-jump" aria-label="Lompat ke hari perjalanan">
-            {data.days.map((day) => <a key={day.dayNumber} className={day.dayNumber === focusDay?.dayNumber ? 'is-current' : ''} href={`#hari-${day.dayNumber}`} onClick={() => { const target = document.getElementById(`hari-${day.dayNumber}`); if (target instanceof HTMLDetailsElement) target.open = true; }}><small>Hari {String(day.dayNumber).padStart(2, '0')}</small><strong>{day.title}</strong><span>{formatDate(day.date)}</span></a>)}
+            {filteredDays.map((day) => <a key={day.dayNumber} className={day.dayNumber === focusDay?.dayNumber ? 'is-current' : ''} href={`#hari-${day.dayNumber}`} onClick={() => { const target = document.getElementById(`hari-${day.dayNumber}`); if (target instanceof HTMLDetailsElement) target.open = true; }}><small>Hari {String(day.dayNumber).padStart(2, '0')}</small><strong>{day.title}</strong><span>{formatDate(day.date)}</span></a>)}
           </nav>
 
           <div className="day-list">
