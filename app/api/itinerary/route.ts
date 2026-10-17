@@ -1,4 +1,4 @@
-import { getItinerary, isAdminPasscode, updateEvent, updateNotice, updateSupport } from '@/lib/itinerary-store';
+import { getItinerary, isAdminPasscode, updateDay, updateEvent, updateNotice, updateSupport } from '@/lib/itinerary-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,8 +20,9 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json() as {
       trip?: string;
-      kind?: 'event' | 'notice' | 'support';
+      kind?: 'event' | 'notice' | 'support' | 'day';
       id?: string;
+      dayNumber?: number;
       value?: string;
       updates?: Record<string, unknown>;
     };
@@ -32,6 +33,8 @@ export async function PATCH(request: Request) {
       await updateSupport(body.trip, body.updates);
     } else if (body.kind === 'event' && body.id) {
       await updateEvent(body.trip, body.id, body.updates ?? {});
+    } else if (body.kind === 'day' && typeof body.dayNumber === 'number') {
+      await updateDay(body.trip, body.dayNumber, body.updates ?? {});
     } else {
       return Response.json({ message: 'Permintaan pembaruan tidak lengkap.' }, { status: 400 });
     }

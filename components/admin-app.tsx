@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, ContactRound, Eye, EyeOff, FileAudio, Hotel, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Check, ContactRound, Eye, EyeOff, FileAudio, Hotel, Loader2, Megaphone, Play, RotateCcw, Save, ShieldCheck, Square, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { resolveTripSlug, type EventStatus, type ItineraryEvent, type ItineraryPayload, type TripSlug, type TripSupport } from '@/lib/itinerary-data';
@@ -23,7 +23,9 @@ export function AdminApp() {
   const [previewing, setPreviewing] = useState(false);
   const previewRef = useRef<HTMLAudioElement | null>(null);
   const previewUrlRef = useRef('');
-  const [saving, setSaving] = useState<'event' | 'notice' | 'support' | 'audio' | 'audio-reset' | null>(null);
+  const [saving, setSaving] = useState<'event' | 'day' | 'notice' | 'support' | 'audio' | 'audio-reset' | null>(null);
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [dayFields, setDayFields] = useState({ title: '', city: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -34,6 +36,7 @@ export function AdminApp() {
     setData(payload);
     setNotice(payload.notice);
     setSupport(payload.support);
+    setSelectedDay((current) => payload.days.some((day) => day.dayNumber === current) ? current : payload.days[0]?.dayNumber ?? 1);
     setSelectedId((current) => current && payload.days.some((day) => day.events.some((event) => event.id === current)) ? current : payload.days[0]?.events[0]?.id ?? '');
   }
 
@@ -60,6 +63,12 @@ export function AdminApp() {
     });
   }, [selectedEvent]);
 
+  const selectedDayData = useMemo(() => data?.days.find((day) => day.dayNumber === selectedDay), [data, selectedDay]);
+  useEffect(() => {
+    if (!selectedDayData) return;
+    setDayFields({ title: selectedDayData.title, city: selectedDayData.city });
+  }, [selectedDayData?.dayNumber, selectedDayData?.title, selectedDayData?.city]);
+
   async function patch(body: unknown) {
     setError(''); setMessage('');
     const response = await fetch('/api/itinerary', {
@@ -80,6 +89,15 @@ export function AdminApp() {
     try {
       await patch({ kind: 'event', id: selectedId, updates: fields });
       setMessage('Agenda berhasil diperbarui dan langsung tampil untuk jemaah.');
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
+    finally { setSaving(null); }
+  }
+
+  async function saveDay() {
+    setSaving('day');
+    try {
+      await patch({ kind: 'day', dayNumber: selectedDay, updates: dayFields });
+      setMessage('Judul hari berhasil diperbarui dan langsung tampil untuk jemaah.');
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
     finally { setSaving(null); }
   }
@@ -214,6 +232,18 @@ export function AdminApp() {
               <label><span>Rincian</span><textarea value={fields.details} onChange={(event) => setFields({ ...fields, details: event.target.value })} rows={3} /></label>
               <label><span>Catatan perubahan</span><textarea value={fields.statusNote} onChange={(event) => setFields({ ...fields, statusNote: event.target.value })} rows={2} placeholder="Contoh: keberangkatan bus mundur 30 menit" /></label>
               <Button size="lg" onClick={() => void saveEvent()} disabled={saving !== null || !passcode}>{saving === 'event' ? <Loader2 className="animate-spin" /> : <Check />} Simpan agenda</Button>
+            </div>}
+          </article>
+
+          <article className="admin-card">
+            <div className="admin-card-heading"><div><small>Judul hari</small><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat…'}</h2></div><CalendarDays /></div>
+            {selectedDayData && <div className="admin-form">
+              <label><span>Pilih hari</span><select value={selectedDay} onChange={(event) => setSelectedDay(Number(event.target.value))}>
+                {data?.days.map((day) => <option key={day.dayNumber} value={day.dayNumber}>Hari {day.dayNumber} · {day.title}</option>)}
+              </select></label>
+              <label><span>Judul hari</span><Input value={dayFields.title} onChange={(event) => setDayFields({ ...dayFields, title: event.target.value })} /></label>
+              <label><span>Kota</span><Input value={dayFields.city} onChange={(event) => setDayFields({ ...dayFields, city: event.target.value })} /></label>
+              <Button size="lg" onClick={() => void saveDay()} disabled={saving !== null || !passcode || !dayFields.title.trim()}>{saving === 'day' ? <Loader2 className="animate-spin" /> : <Check />} Simpan judul hari</Button>
             </div>}
           </article>
 
