@@ -31,12 +31,6 @@ export default function WelcomePage() {
         <h1>Menuju Baitullah,<br />dengan hati yang tenang.</h1>
         <p className="welcome-copy">Satu tempat untuk mengikuti seluruh perjalanan, jadwal ibadah, dan pembaruan dari tim pendamping.</p>
         <div className="journey-options">
-          <button className="journey-option" onClick={() => void beginJourney('27-september-2026')} disabled={Boolean(entering)}>
-            <span><CalendarDays /> Grup 27 September</span><strong>27 Sep—9 Okt 2026</strong><small>{entering === '27-september-2026' ? <><Loader2 className="animate-spin" /> Membuka…</> : <>Lihat itinerary <ArrowRight /></>}</small>
-          </button>
-          <button className="journey-option indigo" onClick={() => void beginJourney('29-september-2026')} disabled={Boolean(entering)}>
-            <span><CalendarDays /> Grup 29 September</span><strong>29 Sep—12 Okt 2026</strong><small>{entering === '29-september-2026' ? <><Loader2 className="animate-spin" /> Membuka…</> : <>Lihat itinerary <ArrowRight /></>}</small>
-          </button>
           <button className="journey-option saffron" onClick={() => void beginJourney('1-november-2026')} disabled={Boolean(entering)}>
             <span><CalendarDays /> Grup 1 November</span><strong>1—9 Nov 2026</strong><small>{entering === '1-november-2026' ? <><Loader2 className="animate-spin" /> Membuka…</> : <>Lihat itinerary <ArrowRight /></>}</small>
           </button>
