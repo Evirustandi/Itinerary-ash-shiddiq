@@ -66,6 +66,11 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
   ]);
   let payload = structuredClone(seed) as ItineraryPayload;
   try { if (payloadSetting?.value) payload = { ...payload, ...JSON.parse(payloadSetting.value) as ItineraryPayload }; } catch { /* seed is the safe fallback */ }
+  // Group metadata is maintained in source; saved D1 payloads only supply editable itinerary content.
+  if (slug === '1-november-2026') {
+    payload.tripName = seed.tripName;
+    payload.highlights = seed.highlights;
+  }
   try { if (supportSetting?.value) payload.support = JSON.parse(supportSetting.value) as TripSupport; } catch { /* seed is the safe fallback */ }
   payload.notice = noticeSetting?.value ?? payload.notice;
   payload.days = payload.days.map((day) => day.title.includes('Jabal Magnet') ? {

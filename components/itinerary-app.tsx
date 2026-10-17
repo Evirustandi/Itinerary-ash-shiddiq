@@ -130,14 +130,16 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           <p className="updated"><Clock3 /> Terakhir diperbarui {updatedLabel} WIB</p>
         </section>}
 
-        <section className="notice-card" aria-label="Pengumuman perjalanan">
-          <span className="notice-icon"><Sparkles /></span>
-          <div><p>Info untuk jemaah</p><strong>{data.notice}</strong></div>
-        </section>
+        <div className="traveler-info-grid">
+          <section className="notice-card" aria-label="Pengumuman perjalanan">
+            <span className="notice-icon"><Sparkles /></span>
+            <div><p>Info untuk jemaah</p><strong>{data.notice}</strong></div>
+          </section>
 
-        {data.highlights?.length ? <section className="trip-highlights" aria-label="Ringkasan perjalanan">
-          {data.highlights.map((item) => <p key={item}><CheckCircle2 /> {item}</p>)}
-        </section> : null}
+          {data.highlights?.length ? <section className="trip-highlights" aria-label="Ringkasan perjalanan">
+            {data.highlights.map((item) => <p key={item}><CheckCircle2 /> {item}</p>)}
+          </section> : null}
+        </div>
 
         {supportVisible && <section className="support-section" aria-labelledby="support-title">
           <div className="section-heading">

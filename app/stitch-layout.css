@@ -134,12 +134,14 @@ body { background: var(--studio-cream); }
 .focus-day-events time { color: #8c641f; font-size: 12px; font-weight: 900; }
 .focus-day-events span { color: #30493e; font-size: 12px; font-weight: 700; line-height: 1.3; }
 .focus-day-card .updated { margin-top: 15px; color: #78857b; }
-.notice-card { gap: 11px; align-items: center; margin: 14px 0 10px; border-radius: 12px; padding: 11px 15px; box-shadow: none; }
+.traveler-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 0 0; }
+.traveler-info-grid > section { min-width: 0; height: 100%; }
+.traveler-info-grid .notice-card { gap: 11px; align-items: start; margin: 0; border-radius: 12px; padding: 14px 15px; box-shadow: none; }
 .notice-icon { width: 32px; height: 32px; border-radius: 9px; }
 .notice-icon svg { width: 16px; }
 .notice-card p { margin: 0 0 2px; font-size: 9px; }
 .notice-card strong { font-size: 12px; line-height: 1.45; }
-.trip-highlights { gap: 5px; margin: 0 0 12px; border-radius: 12px; padding: 10px 15px; }
+.traveler-info-grid .trip-highlights { gap: 5px; margin: 0; border-radius: 12px; padding: 14px 15px; }
 .trip-highlights p { font-size: 12px; line-height: 1.35; }
 .trip-highlights svg { width: 15px; margin-top: 0; }
 .support-section { margin-bottom: 40px; }
@@ -253,6 +255,7 @@ body { background: var(--studio-cream); }
   .admin-sidebar { position: static; }
 }
 @media (max-width: 760px) {
+  .traveler-info-grid { grid-template-columns: 1fr; }
   .welcome-backdrop, .welcome-page::before, .welcome-page::after { height: 100%; }
   .welcome-content { grid-template-columns: 1fr; gap: 32px; min-height: 0; padding-bottom: 90px; }
   .welcome-journey-panel { max-width: none; justify-self: stretch; }
