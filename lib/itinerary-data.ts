@@ -354,7 +354,7 @@ export const itinerary1NovemberSeed: ItineraryPayload = {
   notice: 'Program dapat berubah mengikuti kondisi di lapangan. Pantau halaman ini untuk pembaruan terbaru dari tim Ash‑Shiddiq.',
   updatedAt: '2026-10-01T00:00:00.000Z',
   highlights: [
-    'Program umrah 9 hari · 1–9 November 2026',
+    'Umrah Privat 9D November Bpk. Andriansyah',
     'Perjalanan Makkah–Madinah dan Madinah–Jeddah menggunakan kereta cepat',
     'Penerbangan Qatar Airways melalui Doha',
   ],
