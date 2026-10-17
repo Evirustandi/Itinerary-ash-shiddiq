@@ -195,6 +195,7 @@ export function AdminApp() {
         <p className="eyebrow">Kontrol jadwal live</p>
         <h1>Perbarui informasi<br />untuk jemaah.</h1>
         <p>Perubahan yang disimpan akan muncul otomatis di halaman itinerary dalam sekitar 20 detik.</p>
+        <nav className="admin-quicknav" aria-label="Bagian halaman pengelola"><a href="#admin-agenda">Agenda</a><a href="#admin-day">Judul hari</a><a href="#admin-notice">Pengumuman</a><a href="#admin-support">Pendamping & hotel</a><a href="#admin-audio">Audio</a></nav>
       </section>
 
       <section className="admin-grid">
@@ -210,7 +211,7 @@ export function AdminApp() {
           </select></label>
 
           <div className="admin-divider" />
-          <label><span>Pilih agenda</span><select value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
+          <label><span>Pilih agenda</span><select value={selectedId} onChange={(event) => { const nextId = event.target.value; setSelectedId(nextId); const day = data?.days.find((item) => item.events.some((agenda) => agenda.id === nextId)); if (day) setSelectedDay(day.dayNumber); }}>
             {data?.days.map((day) => (
               <optgroup key={day.dayNumber} label={`Hari ${day.dayNumber} · ${day.title}`}>
                 {day.events.map((event) => <option key={event.id} value={event.id}>{event.time} · {event.title}</option>)}
@@ -220,8 +221,13 @@ export function AdminApp() {
         </aside>
 
         <div className="admin-main">
-          <article className="admin-card">
+          <section className="admin-day-picker" aria-label="Pilih hari perjalanan">
+            <div><p className="eyebrow">Jadwal perjalanan</p><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat agenda…'}</h2></div>
+            <div className="admin-day-strip">{data?.days.map((day) => <button key={day.dayNumber} className={selectedDay === day.dayNumber ? 'active' : ''} onClick={() => { setSelectedDay(day.dayNumber); setSelectedId(day.events[0]?.id ?? ''); }}><small>Hari {String(day.dayNumber).padStart(2, '0')}</small><strong>{day.title}</strong></button>)}</div>
+          </section>
+          <article id="admin-agenda" className="admin-card">
             <div className="admin-card-heading"><div><small>Agenda terpilih</small><h2>{selectedEvent?.title ?? 'Memuat agenda…'}</h2></div><Save /></div>
+            {selectedDayData && <div className="admin-event-picker" aria-label="Pilih agenda hari ini">{selectedDayData.events.map((event) => <button key={event.id} className={selectedId === event.id ? 'active' : ''} onClick={() => setSelectedId(event.id)}><time>{event.time}</time><span>{event.title}</span><small>{event.status === 'now' ? 'Berlangsung' : event.status === 'done' ? 'Selesai' : event.status === 'changed' ? 'Berubah' : 'Terjadwal'}</small></button>)}</div>}
             {fields && <div className="admin-form">
               <div className="two-fields">
                 <label><span>Waktu</span><Input value={fields.time} onChange={(event) => setFields({ ...fields, time: event.target.value })} /></label>
@@ -235,7 +241,7 @@ export function AdminApp() {
             </div>}
           </article>
 
-          <article className="admin-card">
+          <article id="admin-day" className="admin-card">
             <div className="admin-card-heading"><div><small>Judul hari</small><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat…'}</h2></div><CalendarDays /></div>
             {selectedDayData && <div className="admin-form">
               <label><span>Pilih hari</span><select value={selectedDay} onChange={(event) => setSelectedDay(Number(event.target.value))}>
@@ -247,13 +253,13 @@ export function AdminApp() {
             </div>}
           </article>
 
-          <article className="admin-card notice-editor">
+          <article id="admin-notice" className="admin-card notice-editor">
             <div className="admin-card-heading"><div><small>Pengumuman utama</small><h2>Pesan untuk semua jemaah</h2></div><Megaphone /></div>
             <textarea value={notice} onChange={(event) => setNotice(event.target.value)} rows={3} />
             <Button variant="outline" onClick={() => void saveNotice()} disabled={saving !== null || !passcode}>{saving === 'notice' ? <Loader2 className="animate-spin" /> : <Megaphone />} Perbarui pengumuman</Button>
           </article>
 
-          {support && <article className="admin-card support-editor">
+          {support && <article id="admin-support" className="admin-card support-editor">
             <div className="admin-card-heading"><div><small>Kontak & akomodasi</small><h2>Pendamping dan hotel</h2></div><ContactRound /></div>
             <div className="admin-form">
               <div className="admin-subheading"><ContactRound /><div><strong>Pendamping jemaah</strong><small>Nomor akan menjadi tombol WhatsApp.</small></div></div>
@@ -275,7 +281,7 @@ export function AdminApp() {
             </div>
           </article>}
 
-          <article className="admin-card audio-editor">
+          <article id="admin-audio" className="admin-card audio-editor">
             <div className="admin-card-heading"><div><small>Audio latar</small><h2>Ganti audio perjalanan</h2></div><FileAudio /></div>
             <div className="current-audio">
               <FileAudio />

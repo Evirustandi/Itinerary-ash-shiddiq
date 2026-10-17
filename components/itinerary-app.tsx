@@ -90,6 +90,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
       <header className="site-header">
         <a href="/" className="brand-lockup" aria-label="Kembali ke halaman awal Ash-Shiddiq Tour & Travel">
           <img className="site-logo" src="/logo.png" alt="Ash-Shiddiq Tour & Travel" />
+          <span className="brand-caption">Itinerary jemaah<small>Ash‑Shiddiq Tour & Travel</small></span>
         </a>
         <div className="header-actions">
           <span className="live-pill"><Radio /> Live itinerary</span>
@@ -98,12 +99,15 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           </Button>
         </div>
       </header>
+      <nav className="itinerary-quicknav" aria-label="Navigasi itinerary">
+        <a href="#atas">Ringkasan</a>{supportVisible && <a href="#support-title">Pendamping & hotel</a>}<a href="#jadwal">Jadwal harian</a><a href="#penerbangan">Penerbangan</a>
+      </nav>
 
       <div id="atas" className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
         <section className={`hero-grid itinerary-hero-${data.theme}`}>
           <div className="hero-panel">
-            <p className="eyebrow">{data.tripName} · {data.dateRange}</p>
-            <h1>Perjalanan suci,<br />selangkah lebih tenang.</h1>
+            <p className="eyebrow">Itinerary resmi · {data.dateRange}</p>
+            <h1>{data.tripName}</h1>
             <p className="hero-copy">Jadwal terbaru untuk jemaah Ash‑Shiddiq, lengkap dengan waktu berkumpul, agenda, lokasi, dan perubahan dari tim pendamping.</p>
             <div className="countdown-card">
               <div>
@@ -177,6 +181,10 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
             </div>
           </div>
 
+          <nav className="day-jump" aria-label="Lompat ke hari perjalanan">
+            {data.days.map((day) => <a key={day.dayNumber} className={day.dayNumber === focusDay?.dayNumber ? 'is-current' : ''} href={`#hari-${day.dayNumber}`} onClick={() => { const target = document.getElementById(`hari-${day.dayNumber}`); if (target instanceof HTMLDetailsElement) target.open = true; }}><small>Hari {String(day.dayNumber).padStart(2, '0')}</small><strong>{day.title}</strong><span>{formatDate(day.date)}</span></a>)}
+          </nav>
+
           <div className="day-list">
             {filteredDays.map((day) => (
               <details key={day.dayNumber} id={`hari-${day.dayNumber}`} className="day-card" open={day.dayNumber === focusDay?.dayNumber}>
@@ -206,7 +214,7 @@ export function ItineraryApp({ initialData }: { initialData: ItineraryPayload })
           </div>
         </section>
 
-        <section className="flight-section">
+        <section id="penerbangan" className="flight-section">
           <div className="section-heading compact"><div><p className="eyebrow">Penerbangan</p><h2>Jadwal penerbangan</h2></div><Plane /></div>
           <div className="flight-grid">
             {data.flights.map((flight) => (
