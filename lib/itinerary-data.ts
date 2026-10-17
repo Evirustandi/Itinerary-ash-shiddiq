@@ -344,7 +344,7 @@ export const itinerary29Seed: ItineraryPayload = {
 
 export const itinerary1NovemberSeed: ItineraryPayload = {
   tripSlug: '1-november-2026',
-  tripName: 'Umrah Privat 9D Bpk. Andriansyah',
+  tripName: 'Umrah Privat 9D November Bpk. Andriansyah',
   dateRange: '1–9 November 2026',
   departureAt: '2026-11-01T08:45:00+07:00',
   tripEndAt: '2026-11-09T07:15:00+07:00',
