@@ -55,22 +55,24 @@ function normalizeGroup27Event(event: EventRow) {
   };
 }
 
-function settingKey(kind: 'payload' | 'notice' | 'support', slug: TripSlug) { return `trip:${slug}:${kind}`; }
+function settingKey(kind: 'payload' | 'notice' | 'support' | 'title', slug: TripSlug) { return `trip:${slug}:${kind}`; }
 
 async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> {
   const seed = itinerarySeeds[slug];
-  const [payloadSetting, noticeSetting, supportSetting] = await Promise.all([
+  const [payloadSetting, noticeSetting, supportSetting, titleSetting] = await Promise.all([
     env.DB.prepare('SELECT value, updated_at FROM site_settings WHERE key = ?').bind(settingKey('payload', slug)).first<{ value: string; updated_at: string }>(),
     env.DB.prepare('SELECT value, updated_at FROM site_settings WHERE key = ?').bind(settingKey('notice', slug)).first<{ value: string; updated_at: string }>(),
     env.DB.prepare('SELECT value, updated_at FROM site_settings WHERE key = ?').bind(settingKey('support', slug)).first<{ value: string; updated_at: string }>(),
+    env.DB.prepare('SELECT value, updated_at FROM site_settings WHERE key = ?').bind(settingKey('title', slug)).first<{ value: string; updated_at: string }>(),
   ]);
   let payload = structuredClone(seed) as ItineraryPayload;
   try { if (payloadSetting?.value) payload = { ...payload, ...JSON.parse(payloadSetting.value) as ItineraryPayload }; } catch { /* seed is the safe fallback */ }
-  // Group metadata is maintained in source; saved D1 payloads only supply editable itinerary content.
+  // Keep the November source title as the default; an explicit admin title setting takes precedence below.
   if (slug === '1-november-2026') {
     payload.tripName = seed.tripName;
     payload.highlights = seed.highlights;
   }
+  if (titleSetting?.value) payload.tripName = titleSetting.value;
   try { if (supportSetting?.value) payload.support = JSON.parse(supportSetting.value) as TripSupport; } catch { /* seed is the safe fallback */ }
   payload.notice = noticeSetting?.value ?? payload.notice;
   payload.days = payload.days.map((day) => day.title.includes('Jabal Magnet') ? {
@@ -78,7 +80,7 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
     title: 'Jabal Magnet',
     events: day.events.map((event) => event.title.includes('Jabal Magnet') ? { ...event, details: '' } : event),
   } : day);
-  payload.updatedAt = [payload.updatedAt, payloadSetting?.updated_at, noticeSetting?.updated_at, supportSetting?.updated_at].filter(Boolean).sort().at(-1) ?? payload.updatedAt;
+  payload.updatedAt = [payload.updatedAt, payloadSetting?.updated_at, noticeSetting?.updated_at, supportSetting?.updated_at, titleSetting?.updated_at].filter(Boolean).sort().at(-1) ?? payload.updatedAt;
   return payload;
 }
 
@@ -86,11 +88,12 @@ export async function getItinerary(requestedSlug?: string | null): Promise<Itine
   await ensureDatabase();
   const slug = resolveTripSlug(requestedSlug);
   if (slug !== '27-september-2026') return getSecondaryItinerary(slug);
-  const [dayResult, eventResult, notice, supportSetting] = await Promise.all([
+  const [dayResult, eventResult, notice, supportSetting, titleSetting] = await Promise.all([
     env.DB.prepare('SELECT day_number, date, weekday, title, city, updated_at FROM itinerary_days ORDER BY day_number').all<DayRow>(),
     env.DB.prepare(`SELECT id, day_number, time, title, details, location, status, status_note, sort_order, updated_at FROM itinerary_events ORDER BY day_number, sort_order`).all<EventRow>(),
     env.DB.prepare("SELECT value, updated_at FROM site_settings WHERE key = 'notice'").first<{ value: string; updated_at: string }>(),
     env.DB.prepare("SELECT value, updated_at FROM site_settings WHERE key = 'trip_support'").first<{ value: string; updated_at: string }>(),
+    env.DB.prepare('SELECT value, updated_at FROM site_settings WHERE key = ?').bind(settingKey('title', slug)).first<{ value: string; updated_at: string }>(),
   ]);
   const eventsByDay = new Map<number, EventRow[]>();
   for (const rawRow of eventResult.results) { const row = normalizeGroup27Event(rawRow); const list = eventsByDay.get(row.day_number) ?? []; list.push(row); eventsByDay.set(row.day_number, list); }
@@ -100,8 +103,18 @@ export async function getItinerary(requestedSlug?: string | null): Promise<Itine
   }));
   let support = itinerarySeed.support;
   try { if (supportSetting?.value) support = JSON.parse(supportSetting.value) as TripSupport; } catch { /* seed is the safe fallback */ }
-  const latest = [notice?.updated_at, supportSetting?.updated_at, ...dayResult.results.map((d) => d.updated_at), ...eventResult.results.map((e) => e.updated_at)].filter(Boolean).sort().at(-1) ?? itinerarySeed.updatedAt;
-  return { ...itinerarySeed, notice: notice?.value ?? itinerarySeed.notice, support, updatedAt: latest, days };
+  const latest = [notice?.updated_at, supportSetting?.updated_at, titleSetting?.updated_at, ...dayResult.results.map((d) => d.updated_at), ...eventResult.results.map((e) => e.updated_at)].filter(Boolean).sort().at(-1) ?? itinerarySeed.updatedAt;
+  return { ...itinerarySeed, tripName: titleSetting?.value || itinerarySeed.tripName, notice: notice?.value ?? itinerarySeed.notice, support, updatedAt: latest, days };
+}
+
+export async function updateTripTitle(requestedSlug: string | null | undefined, value: string) {
+  await ensureDatabase();
+  const slug = resolveTripSlug(requestedSlug);
+  const title = cleanText(value, 160);
+  if (!title) throw new Error('Judul itinerary tidak boleh kosong.');
+  const now = new Date().toISOString();
+  await env.DB.prepare(`INSERT INTO site_settings (key, value, updated_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`)
+    .bind(settingKey('title', slug), title, now).run();
 }
 
 export async function updateEvent(requestedSlug: string | null | undefined, id: string, updates: Partial<{ time: string; title: string; details: string; location: string; status: EventStatus; statusNote: string }>) {

@@ -16,16 +16,17 @@ export function AdminApp() {
   const [showPasscode, setShowPasscode] = useState(false);
   const [selectedId, setSelectedId] = useState('');
   const [editOpen, setEditOpen] = useState(false);
-  const [sectionEditor, setSectionEditor] = useState<'day' | 'notice' | 'support' | 'audio' | null>(null);
+  const [sectionEditor, setSectionEditor] = useState<'trip-title' | 'day' | 'notice' | 'support' | 'audio' | null>(null);
   const [fields, setFields] = useState<EditFields | null>(null);
   const [notice, setNotice] = useState('');
+  const [tripTitle, setTripTitle] = useState('');
   const [support, setSupport] = useState<TripSupport | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioInfo, setAudioInfo] = useState<AudioInfo | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const previewRef = useRef<HTMLAudioElement | null>(null);
   const previewUrlRef = useRef('');
-  const [saving, setSaving] = useState<'event' | 'day' | 'notice' | 'support' | 'audio' | 'audio-reset' | null>(null);
+  const [saving, setSaving] = useState<'event' | 'trip-title' | 'day' | 'notice' | 'support' | 'audio' | 'audio-reset' | null>(null);
   const [selectedDay, setSelectedDay] = useState(1);
   const [dayFields, setDayFields] = useState({ title: '', city: '' });
   const [message, setMessage] = useState('');
@@ -36,6 +37,7 @@ export function AdminApp() {
     if (!response.ok) throw new Error('Data itinerary belum dapat dimuat.');
     const payload = await response.json() as ItineraryPayload;
     setData(payload);
+    setTripTitle(payload.tripName);
     setNotice(payload.notice);
     setSupport(payload.support);
     setSelectedDay((current) => payload.days.some((day) => day.dayNumber === current) ? current : payload.days[0]?.dayNumber ?? 1);
@@ -81,6 +83,7 @@ export function AdminApp() {
     const payload = await response.json() as ItineraryPayload & { message?: string };
     if (!response.ok) throw new Error(payload.message || 'Pembaruan gagal disimpan.');
     setData(payload);
+    setTripTitle(payload.tripName);
     setNotice(payload.notice);
     setSupport(payload.support);
   }
@@ -103,6 +106,16 @@ export function AdminApp() {
       setMessage('Judul hari berhasil diperbarui dan langsung tampil untuk jemaah.');
       setSectionEditor(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Pembaruan gagal.'); }
+    finally { setSaving(null); }
+  }
+
+  async function saveTripTitle() {
+    setSaving('trip-title');
+    try {
+      await patch({ kind: 'trip-title', value: tripTitle });
+      setMessage('Judul itinerary berhasil diperbarui dan langsung tampil untuk jemaah.');
+      setSectionEditor(null);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Judul itinerary gagal disimpan.'); }
     finally { setSaving(null); }
   }
 
@@ -138,7 +151,7 @@ export function AdminApp() {
   function closeSectionEditor() {
     if (saving) return;
     setSectionEditor(null);
-    if (data) { setNotice(data.notice); setSupport(data.support); }
+    if (data) { setTripTitle(data.tripName); setNotice(data.notice); setSupport(data.support); }
     if (selectedDayData) setDayFields({ title: selectedDayData.title, city: selectedDayData.city });
     stopPreview();
   }
@@ -229,7 +242,7 @@ export function AdminApp() {
         <p className="eyebrow">Kontrol jadwal live</p>
         <h1>Perbarui informasi<br />untuk jemaah.</h1>
         <p>Perubahan yang disimpan akan muncul otomatis di halaman itinerary dalam sekitar 20 detik.</p>
-        <nav className="admin-quicknav" aria-label="Bagian halaman pengelola"><a href="#admin-agenda">Agenda</a><a href="#admin-day">Judul hari</a><a href="#admin-notice">Pengumuman</a><a href="#admin-support">Pendamping & hotel</a><a href="#admin-audio">Audio</a></nav>
+        <nav className="admin-quicknav" aria-label="Bagian halaman pengelola"><a href="#admin-trip-title">Judul itinerary</a><a href="#admin-agenda">Agenda</a><a href="#admin-day">Judul hari</a><a href="#admin-notice">Pengumuman</a><a href="#admin-support">Pendamping & hotel</a><a href="#admin-audio">Audio</a></nav>
       </section>
 
       <section className="admin-grid">
@@ -257,6 +270,15 @@ export function AdminApp() {
         </aside>
 
         <div className="admin-main">
+          <article id="admin-trip-title" className="admin-card">
+            <div className="admin-card-heading"><div><small>Judul rombongan</small><h2>{data?.tripName ?? 'Memuat judul itinerary…'}</h2><p>Judul besar yang tampil di bagian atas halaman itinerary jemaah.</p></div><button className="admin-edit-btn" onClick={() => { setTripTitle(data?.tripName ?? ''); setSectionEditor('trip-title'); }} disabled={!data}><Pencil /> Edit judul itinerary</button></div>
+            {sectionEditor === 'trip-title' && <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeSectionEditor(); }}><div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-trip-title-heading"><div className="admin-modal-header"><div><p className="eyebrow">Judul rombongan</p><h2 id="admin-trip-title-heading">Edit judul itinerary</h2></div><button onClick={closeSectionEditor} aria-label="Tutup editor judul itinerary"><X /></button></div><div className="admin-form">
+              <label><span>Judul itinerary</span><Input value={tripTitle} onChange={(event) => setTripTitle(event.target.value)} maxLength={160} placeholder="Contoh: Umrah Garuda 27 November" /></label>
+              <p className="admin-auth-hint">Perubahan judul berlaku untuk grup yang dipilih dan tidak mengubah tanggal, penerbangan, atau agenda.</p>
+              {!passcode && <p className="admin-auth-hint">Masukkan kode pengelola di panel sebelum menyimpan.</p>}
+              <div className="admin-modal-actions"><Button variant="outline" onClick={closeSectionEditor}>Batal</Button><Button size="lg" onClick={() => void saveTripTitle()} disabled={saving !== null || !passcode || !tripTitle.trim()}>{saving === 'trip-title' ? <Loader2 className="animate-spin" /> : <Check />} Simpan judul itinerary</Button></div>
+            </div></div></div>}
+          </article>
           <section className="admin-day-picker" aria-label="Pilih hari perjalanan">
             <div><p className="eyebrow">Jadwal perjalanan</p><h2>Hari {selectedDay} · {selectedDayData?.title ?? 'Memuat agenda…'}</h2></div>
             <div className="admin-day-strip">{data?.days.map((day) => <button key={day.dayNumber} className={selectedDay === day.dayNumber ? 'active' : ''} onClick={() => { setSelectedDay(day.dayNumber); setSelectedId(day.events[0]?.id ?? ''); }}><small>Hari {String(day.dayNumber).padStart(2, '0')}</small><strong>{day.title}</strong></button>)}</div>

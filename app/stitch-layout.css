@@ -197,7 +197,7 @@ body { background: var(--studio-cream); }
 .admin-sidebar > p { grid-column: 1 / -1; margin: 0; }
 .admin-divider { display: none; }
 .admin-main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
-.admin-overview, .admin-day-picker, #admin-agenda, #admin-support, #admin-audio, .admin-message { grid-column: 1 / -1; }
+.admin-overview, #admin-trip-title, .admin-day-picker, #admin-agenda, #admin-support, #admin-audio, .admin-message { grid-column: 1 / -1; }
 .admin-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .admin-overview-card { display: grid; grid-template-columns: 40px minmax(0, 1fr) 18px; align-items: start; gap: 12px; min-height: 155px; border: 1px solid var(--studio-line); border-radius: 15px; background: #fffdf8; padding: 22px; color: var(--studio-ink); text-decoration: none; }
 .admin-overview-card.audio { border-color: #275549; background: var(--studio-deep); color: #fffaf0; }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, BookOpen, CalendarDays, MapPin, MessageCircle, Plane, Search, ShieldCheck } from 'lucide-react';
 import { useAmbientAudio } from '@/components/ambient-audio';
@@ -12,11 +12,26 @@ export default function WelcomePage() {
   const { start } = useAmbientAudio();
   const [entering, setEntering] = useState('');
   const [groupQuery, setGroupQuery] = useState('');
+  const [tripTitles, setTripTitles] = useState<Record<string, string>>({});
   // Only published-to-the-portal groups belong here; older hidden groups stay accessible by direct URL.
   const visibleTrips = [itinerary27NovemberSeed, itinerary1NovemberSeed];
+  useEffect(() => {
+    let active = true;
+    async function refreshTitles() {
+      const results = await Promise.allSettled(visibleTrips.map(async (item) => {
+        const response = await fetch(`/api/itinerary?trip=${encodeURIComponent(item.tripSlug)}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Judul itinerary belum dapat dimuat.');
+        return response.json() as Promise<{ tripSlug: string; tripName: string }>;
+      }));
+      if (active) setTripTitles(Object.fromEntries(results.flatMap((result) => result.status === 'fulfilled' ? [[result.value.tripSlug, result.value.tripName]] : [])));
+    }
+    void refreshTitles();
+    const timer = window.setInterval(() => void refreshTitles(), 20_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, []);
   const normalizedQuery = groupQuery.trim().toLocaleLowerCase('id-ID');
   const matchingTrips = visibleTrips.filter((item) =>
-    [item.tripName, item.dateRange, item.departureLabel, item.tripSlug]
+    [tripTitles[item.tripSlug] ?? item.tripName, item.dateRange, item.departureLabel, item.tripSlug]
       .some((value) => value.toLocaleLowerCase('id-ID').includes(normalizedQuery))
   );
 
@@ -61,7 +76,7 @@ export default function WelcomePage() {
         <p className="group-result-count" role="status">{matchingTrips.length} rombongan ditemukan</p>
         {matchingTrips.map((item) => <article className="portal-trip-card" key={item.tripSlug}>
           <div className="portal-trip-image"><span>{item.departureLabel}</span><h3>Menuju tanah suci bersama Ash‑Shiddiq.</h3></div>
-          <div className="portal-trip-details"><p className="eyebrow">Umrah {item.days.length} hari</p><h3>{item.tripName}</h3><div className="portal-trip-facts"><span><CalendarDays /> {item.dateRange}</span><span><Plane /> {item.flights[0]?.route}</span><span><MapPin /> Makkah · Madinah</span></div><p>Ikuti hari demi hari, dari keberangkatan hingga kembali ke Jakarta.</p><button onClick={() => void beginJourney(item.tripSlug)} disabled={Boolean(entering)}>Buka rincian itinerary <ArrowRight /></button></div>
+          <div className="portal-trip-details"><p className="eyebrow">Umrah {item.days.length} hari</p><h3>{tripTitles[item.tripSlug] ?? item.tripName}</h3><div className="portal-trip-facts"><span><CalendarDays /> {item.dateRange}</span><span><Plane /> {item.flights[0]?.route}</span><span><MapPin /> Makkah · Madinah</span></div><p>Ikuti hari demi hari, dari keberangkatan hingga kembali ke Jakarta.</p><button onClick={() => void beginJourney(item.tripSlug)} disabled={Boolean(entering)}>Buka rincian itinerary <ArrowRight /></button></div>
         </article>)}
         {matchingTrips.length === 0 && <div className="group-empty"><Search /><h3>Rombongan tidak ditemukan</h3><p>Periksa nama grup atau tanggal keberangkatan, lalu coba lagi.</p><button type="button" onClick={() => setGroupQuery('')}>Tampilkan semua rombongan</button></div>}
         <div className="portal-benefits">
