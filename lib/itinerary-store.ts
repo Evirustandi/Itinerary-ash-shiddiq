@@ -73,28 +73,13 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
     payload.highlights = seed.highlights;
   }
   if (slug === '27-november-2026') {
-    // Refresh only the original generic tour entries in an already-saved payload.
-    // Other admin edits, including the group title, remain untouched.
+    // Expand the original short schedule in already-saved payloads without
+    // replacing days whose events were subsequently edited by an admin.
     payload.days = payload.days.map((day) => {
-      const wasGenericMakkah = day.dayNumber === 3 && day.events.length === 3
-        && day.events[1]?.details === 'Rute kunjungan menyesuaikan kondisi di lapangan.'
-        && day.events[2]?.title === 'Kembali ke hotel dan Free Program';
-      const wasGenericThaif = day.dayNumber === 5 && day.events.length === 3
-        && day.events[1]?.details === 'Kunjungan mengikuti rute yang ditetapkan pendamping.'
-        && day.events[2]?.title === 'Kembali ke Makkah';
-      const needsRaudhah = day.dayNumber === 9 && day.events[0]?.title === 'Kunjungan Museum Madinah'
-        && !day.events.some((event) => event.title.toLowerCase().includes('raudhah'));
-      if (needsRaudhah) {
-        const raudhah = seed.days.find((item) => item.dayNumber === 9)?.events.find((event) => event.title.startsWith('Ziarah Raudhah'));
-        if (!raudhah) return day;
-        return { ...day, title: day.title === 'Museum Madinah · Tentatif' ? 'Museum Madinah & Ziarah Raudhah · Tentatif' : day.title,
-          events: [...day.events, raudhah] };
-      }
-      if (!wasGenericMakkah && !wasGenericThaif) return day;
       const revised = seed.days.find((item) => item.dayNumber === day.dayNumber);
-      if (!revised) return day;
-      return { ...day, title: day.title === (wasGenericMakkah ? 'City Tour Makkah' : 'City Tour Thaif') ? revised.title : day.title,
-        events: [day.events[0], ...revised.events.slice(1)] };
+      if (!revised || day.events.length >= revised.events.length) return day;
+      const unedited = day.events.every((event) => event.updatedAt === '2026-08-30T00:00:00.000Z' && event.status === 'scheduled');
+      return unedited ? { ...day, events: revised.events } : day;
     });
   }
   if (titleSetting?.value) payload.tripName = titleSetting.value;
