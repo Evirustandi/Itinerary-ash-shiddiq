@@ -72,6 +72,23 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
     payload.tripName = seed.tripName;
     payload.highlights = seed.highlights;
   }
+  if (slug === '27-november-2026') {
+    // Refresh only the original generic tour entries in an already-saved payload.
+    // Other admin edits, including the group title, remain untouched.
+    payload.days = payload.days.map((day) => {
+      const wasGenericMakkah = day.dayNumber === 3 && day.events.length === 3
+        && day.events[1]?.details === 'Rute kunjungan menyesuaikan kondisi di lapangan.'
+        && day.events[2]?.title === 'Kembali ke hotel dan Free Program';
+      const wasGenericThaif = day.dayNumber === 5 && day.events.length === 3
+        && day.events[1]?.details === 'Kunjungan mengikuti rute yang ditetapkan pendamping.'
+        && day.events[2]?.title === 'Kembali ke Makkah';
+      if (!wasGenericMakkah && !wasGenericThaif) return day;
+      const revised = seed.days.find((item) => item.dayNumber === day.dayNumber);
+      if (!revised) return day;
+      return { ...day, title: day.title === (wasGenericMakkah ? 'City Tour Makkah' : 'City Tour Thaif') ? revised.title : day.title,
+        events: [day.events[0], ...revised.events.slice(1)] };
+    });
+  }
   if (titleSetting?.value) payload.tripName = titleSetting.value;
   try { if (supportSetting?.value) payload.support = JSON.parse(supportSetting.value) as TripSupport; } catch { /* seed is the safe fallback */ }
   payload.notice = noticeSetting?.value ?? payload.notice;
@@ -80,7 +97,7 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
     title: 'Jabal Magnet',
     events: day.events.map((event) => event.title.includes('Jabal Magnet') ? { ...event, details: '' } : event),
   } : day);
-  payload.updatedAt = [payload.updatedAt, payloadSetting?.updated_at, noticeSetting?.updated_at, supportSetting?.updated_at, titleSetting?.updated_at].filter(Boolean).sort().at(-1) ?? payload.updatedAt;
+  payload.updatedAt = [payload.updatedAt, seed.updatedAt, payloadSetting?.updated_at, noticeSetting?.updated_at, supportSetting?.updated_at, titleSetting?.updated_at].filter(Boolean).sort().at(-1) ?? payload.updatedAt;
   return payload;
 }
 

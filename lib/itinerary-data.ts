@@ -451,7 +451,7 @@ export const itinerary27NovemberSeed: ItineraryPayload = {
   theme: 'emerald',
   timezoneNote: 'Seluruh waktu mengikuti waktu setempat (WIB di Indonesia, AST di Arab Saudi). Waktu kegiatan selain penerbangan dan keberangkatan ke bandara 8 Desember pukul 11.00 merupakan perkiraan.',
   notice: 'Urutan program mengikuti rencana perjalanan. Jam kegiatan di luar penerbangan dan keberangkatan ke bandara 8 Desember pukul 11.00 dapat menyesuaikan kondisi lapangan; ikuti arahan Tour Leader.',
-  updatedAt: '2026-11-06T00:00:00.000Z',
+  updatedAt: '2026-11-06T05:19:00.000Z',
   highlights: [
     'Garuda Indonesia · berangkat ke Jeddah, pulang dari Madinah',
     'Makkah 27 November–3 Desember · Madinah 3–8 Desember',
@@ -480,18 +480,22 @@ export const itinerary27NovemberSeed: ItineraryPayload = {
       ['01.30', 'Umrah pertama', 'Waktu perkiraan setelah perjalanan dari Jeddah dan persiapan di Makkah.', 'Masjidil Haram'],
       ['09.00', 'Istirahat dan Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjidil Haram.', 'Makkah'],
     ]),
-    simpleDay(3, '2026-11-29', 'Ahad', 'City Tour Makkah', 'Makkah', [
+    simpleDay(3, '2026-11-29', 'Ahad', 'City Tour Makkah · Umrah Kedua', 'Makkah', [
       ['07.30', 'Berkumpul untuk city tour Makkah', 'Waktu dan titik kumpul dikonfirmasi oleh Tour Leader.', 'Hotel Makkah'],
-      ['08.00', 'City tour Makkah', 'Rute kunjungan menyesuaikan kondisi di lapangan.', 'Makkah'],
-      ['13.00', 'Kembali ke hotel dan Free Program', 'Jemaah dapat melanjutkan ibadah masing-masing.', 'Makkah'],
+      ['08.00', 'City tour Makkah', 'Jabal Tsur, Arafah, Jabal Rahmah, Muzdalifah, Masjid Namirah, Mina (Jamarat), dan Jabal Nur. Urutan kunjungan menyesuaikan kondisi lapangan.', 'Makkah'],
+      ['12.00', 'Miqat di Ji’ronah', 'Mengambil miqat untuk umrah kedua setelah city tour. Waktu perkiraan.', 'Ji’ronah'],
+      ['13.30', 'Umrah kedua', 'Dilanjutkan tawaf, sa’i, dan tahallul. Waktu perkiraan.', 'Masjidil Haram'],
+      ['18.00', 'Free Program', 'Jemaah dapat melanjutkan ibadah masing-masing.', 'Makkah'],
     ]),
     simpleDay(4, '2026-11-30', 'Senin', 'Free Program Makkah', 'Makkah', [
       ['09.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjidil Haram. Waktu fleksibel.', 'Makkah'],
     ]),
-    simpleDay(5, '2026-12-01', 'Selasa', 'City Tour Thaif', 'Thaif', [
+    simpleDay(5, '2026-12-01', 'Selasa', 'City Tour Thaif · Umrah Ketiga', 'Thaif', [
       ['07.30', 'Berkumpul untuk city tour Thaif', 'Waktu dan titik kumpul dikonfirmasi oleh Tour Leader.', 'Hotel Makkah'],
-      ['08.00', 'Berangkat menuju Thaif', 'Kunjungan mengikuti rute yang ditetapkan pendamping.', 'Makkah → Thaif'],
-      ['16.00', 'Kembali ke Makkah', 'Waktu tiba perkiraan.', 'Thaif → Makkah'],
+      ['08.00', 'City tour Thaif', 'Kereta gantung, pabrik parfum, Masjid Khu’, Masjid Addas, dan Masjid Abdullah bin Abbas. Urutan kunjungan menyesuaikan kondisi lapangan.', 'Thaif'],
+      ['15.00', 'Miqat di Qarnul Manazil', 'Mengambil miqat untuk umrah ketiga dalam perjalanan kembali ke Makkah. Waktu perkiraan.', 'Qarnul Manazil'],
+      ['18.00', 'Kembali ke Makkah', 'Waktu tiba perkiraan.', 'Thaif → Makkah'],
+      ['20.00', 'Umrah ketiga', 'Dilanjutkan tawaf, sa’i, dan tahallul. Waktu perkiraan.', 'Masjidil Haram'],
     ]),
     simpleDay(6, '2026-12-02', 'Rabu', 'Free Program Makkah', 'Makkah', [
       ['09.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjidil Haram. Waktu fleksibel.', 'Makkah'],
