@@ -5,19 +5,18 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, BookOpen, CalendarDays, MapPin, MessageCircle, Plane, Search, ShieldCheck } from 'lucide-react';
 import { useAmbientAudio } from '@/components/ambient-audio';
 import { PrayerTimes } from '@/components/prayer-times';
-import { itinerary1NovemberSeed } from '@/lib/itinerary-data';
+import { itinerary1NovemberSeed, itinerary27NovemberSeed } from '@/lib/itinerary-data';
 
 export default function WelcomePage() {
   const router = useRouter();
   const { start } = useAmbientAudio();
   const [entering, setEntering] = useState('');
   const [groupQuery, setGroupQuery] = useState('');
-  const trip = itinerary1NovemberSeed;
   // Only published-to-the-portal groups belong here; older hidden groups stay accessible by direct URL.
-  const visibleTrips = [trip];
+  const visibleTrips = [itinerary27NovemberSeed, itinerary1NovemberSeed];
   const normalizedQuery = groupQuery.trim().toLocaleLowerCase('id-ID');
   const matchingTrips = visibleTrips.filter((item) =>
-    [item.tripName, item.dateRange, item.departureLabel, item.tripSlug, 'november 2026']
+    [item.tripName, item.dateRange, item.departureLabel, item.tripSlug]
       .some((value) => value.toLocaleLowerCase('id-ID').includes(normalizedQuery))
   );
 
@@ -58,7 +57,7 @@ export default function WelcomePage() {
       <section className="portal-body" aria-label="Informasi portal jemaah">
         <PrayerTimes />
         <div id="rombongan" className="portal-section-title"><div><p className="eyebrow">Rombongan keberangkatan</p><h2>Perjalanan yang akan datang</h2><p>Temukan rombongan Anda untuk membuka jadwal perjalanan.</p></div><span>{visibleTrips.length} grup tersedia</span></div>
-        <label className="group-search"><span>Cari rombongan atau tanggal keberangkatan</span><span className="group-search-input"><Search aria-hidden="true" /><input type="search" value={groupQuery} onChange={(event) => setGroupQuery(event.target.value)} placeholder="Contoh: 1 November 2026" /></span></label>
+        <label className="group-search"><span>Cari rombongan atau tanggal keberangkatan</span><span className="group-search-input"><Search aria-hidden="true" /><input type="search" value={groupQuery} onChange={(event) => setGroupQuery(event.target.value)} placeholder="Contoh: 27 November 2026" /></span></label>
         <p className="group-result-count" role="status">{matchingTrips.length} rombongan ditemukan</p>
         {matchingTrips.map((item) => <article className="portal-trip-card" key={item.tripSlug}>
           <div className="portal-trip-image"><span>{item.departureLabel}</span><h3>Menuju tanah suci bersama Ash‑Shiddiq.</h3></div>

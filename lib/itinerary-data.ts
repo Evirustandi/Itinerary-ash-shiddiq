@@ -441,10 +441,103 @@ export const itinerary1NovemberSeed: ItineraryPayload = {
   ],
 };
 
+export const itinerary27NovemberSeed: ItineraryPayload = {
+  tripSlug: '27-november-2026',
+  tripName: 'Umrah Garuda 27 November · Jeddah–Madinah',
+  dateRange: '27 November–9 Desember 2026',
+  departureAt: '2026-11-27T16:20:00+07:00',
+  tripEndAt: '2026-12-09T07:05:00+07:00',
+  departureLabel: 'Jumat, 27 November 2026',
+  theme: 'emerald',
+  timezoneNote: 'Seluruh waktu mengikuti waktu setempat (WIB di Indonesia, AST di Arab Saudi). Waktu kegiatan selain penerbangan dan keberangkatan ke bandara 8 Desember pukul 11.00 merupakan perkiraan.',
+  notice: 'Urutan program mengikuti rencana perjalanan. Jam kegiatan di luar penerbangan dan keberangkatan ke bandara 8 Desember pukul 11.00 dapat menyesuaikan kondisi lapangan; ikuti arahan Tour Leader.',
+  updatedAt: '2026-11-06T00:00:00.000Z',
+  highlights: [
+    'Garuda Indonesia · berangkat ke Jeddah, pulang dari Madinah',
+    'Makkah 27 November–3 Desember · Madinah 3–8 Desember',
+    'Tiba kembali di Jakarta 9 Desember pukul 07.05 WIB',
+  ],
+  support: {
+    tourLeader: { name: '', phone: '' },
+    mutawwif: { name: '', phone: '' },
+    hotels: {
+      makkah: { name: '', address: '' },
+      madinah: { name: '', address: '' },
+    },
+  },
+  flights: [
+    { date: '27 Nov 2026', flight: 'GA 982', route: 'Jakarta → Jeddah', time: '16.20 WIB → 22.30 AST' },
+    { date: '8–9 Des 2026', flight: 'GA 969', route: 'Madinah → Jakarta', time: '17.20 AST → 07.05 WIB (+1)' },
+  ],
+  days: [
+    simpleDay(1, '2026-11-27', 'Jumat', 'Jakarta → Jeddah → Makkah', 'Perjalanan', [
+      ['12.00', 'Berkumpul di Bandara Soekarno–Hatta', 'Waktu berkumpul perkiraan; konfirmasi kembali kepada Tour Leader.', 'Jakarta'],
+      ['16.20', 'Penerbangan GA 982 menuju Jeddah', 'Garuda Indonesia, jadwal sesuai informasi penerbangan.', 'Jakarta'],
+      ['22.30', 'Tiba di Jeddah', 'Proses imigrasi dan pengambilan bagasi.', 'Bandara Jeddah'],
+      ['23.30', 'Menuju Makkah untuk umrah pertama', 'Setelah tiba dan bersiap, umrah pertama dilaksanakan pada dini hari 28 November.', 'Jeddah → Makkah'],
+    ]),
+    simpleDay(2, '2026-11-28', 'Sabtu', 'Umrah Pertama · Free Program', 'Makkah', [
+      ['01.30', 'Umrah pertama', 'Waktu perkiraan setelah perjalanan dari Jeddah dan persiapan di Makkah.', 'Masjidil Haram'],
+      ['09.00', 'Istirahat dan Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjidil Haram.', 'Makkah'],
+    ]),
+    simpleDay(3, '2026-11-29', 'Ahad', 'City Tour Makkah', 'Makkah', [
+      ['07.30', 'Berkumpul untuk city tour Makkah', 'Waktu dan titik kumpul dikonfirmasi oleh Tour Leader.', 'Hotel Makkah'],
+      ['08.00', 'City tour Makkah', 'Rute kunjungan menyesuaikan kondisi di lapangan.', 'Makkah'],
+      ['13.00', 'Kembali ke hotel dan Free Program', 'Jemaah dapat melanjutkan ibadah masing-masing.', 'Makkah'],
+    ]),
+    simpleDay(4, '2026-11-30', 'Senin', 'Free Program Makkah', 'Makkah', [
+      ['09.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjidil Haram. Waktu fleksibel.', 'Makkah'],
+    ]),
+    simpleDay(5, '2026-12-01', 'Selasa', 'City Tour Thaif', 'Thaif', [
+      ['07.30', 'Berkumpul untuk city tour Thaif', 'Waktu dan titik kumpul dikonfirmasi oleh Tour Leader.', 'Hotel Makkah'],
+      ['08.00', 'Berangkat menuju Thaif', 'Kunjungan mengikuti rute yang ditetapkan pendamping.', 'Makkah → Thaif'],
+      ['16.00', 'Kembali ke Makkah', 'Waktu tiba perkiraan.', 'Thaif → Makkah'],
+    ]),
+    simpleDay(6, '2026-12-02', 'Rabu', 'Free Program Makkah', 'Makkah', [
+      ['09.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjidil Haram. Waktu fleksibel.', 'Makkah'],
+      ['20.00', 'Persiapan pindah ke Madinah', 'Siapkan koper untuk check-out keesokan hari. Waktu perkiraan.', 'Hotel Makkah'],
+    ]),
+    simpleDay(7, '2026-12-03', 'Kamis', 'Makkah → Badar → Madinah', 'Perjalanan', [
+      ['08.00', 'Check-out hotel Makkah', 'Waktu perkiraan; ikuti pengumuman Tour Leader.', 'Hotel Makkah'],
+      ['09.00', 'Berangkat menuju Madinah', 'Perjalanan melalui Badar.', 'Makkah → Badar'],
+      ['13.00', 'Ziarah Badar', 'Waktu kunjungan perkiraan, menyesuaikan perjalanan.', 'Badar'],
+      ['19.00', 'Tiba di Madinah dan check-in hotel', 'Waktu tiba perkiraan.', 'Hotel Madinah'],
+      ['20.30', 'Ziarah Rasulullah ﷺ', 'Dilaksanakan setelah tiba di Madinah pada malam hari.', 'Masjid Nabawi'],
+    ]),
+    simpleDay(8, '2026-12-04', 'Jumat', 'Ziarah Dakhili', 'Madinah', [
+      ['08.00', 'Ziarah dakhili di sekitar Masjid Nabawi', 'Waktu dan urutan kunjungan dikonfirmasi pendamping.', 'Sekitar Masjid Nabawi'],
+      ['13.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjid Nabawi.', 'Madinah'],
+    ]),
+    simpleDay(9, '2026-12-05', 'Sabtu', 'Museum Madinah · Tentatif', 'Madinah', [
+      ['09.00', 'Kunjungan Museum Madinah', 'Tentatif; menunggu konfirmasi ketersediaan dan arahan Tour Leader.', 'Madinah'],
+      ['13.00', 'Free Program', 'Jika kunjungan museum tidak terlaksana, jemaah dapat memaksimalkan ibadah di Masjid Nabawi.', 'Madinah'],
+    ]),
+    simpleDay(10, '2026-12-06', 'Ahad', 'City Tour Madinah', 'Madinah', [
+      ['07.30', 'Berkumpul untuk city tour Madinah', 'Waktu dan titik kumpul dikonfirmasi oleh Tour Leader.', 'Hotel Madinah'],
+      ['08.00', 'Ziarah Masjid Quba dan Jabal Uhud', 'Urutan kunjungan menyesuaikan kondisi di lapangan.', 'Madinah'],
+      ['11.00', 'Kunjungan kebun kurma', 'Waktu kunjungan perkiraan.', 'Madinah'],
+      ['13.00', 'Kembali dan Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjid Nabawi.', 'Madinah'],
+    ]),
+    simpleDay(11, '2026-12-07', 'Senin', 'Free Program · Persiapan Check-out', 'Madinah', [
+      ['09.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjid Nabawi. Waktu fleksibel.', 'Madinah'],
+      ['20.00', 'Persiapan check-out', 'Siapkan koper dan dokumen untuk kepulangan. Waktu perkiraan.', 'Hotel Madinah'],
+    ]),
+    simpleDay(12, '2026-12-08', 'Selasa', 'Madinah → Jakarta', 'Perjalanan', [
+      ['09.00', 'Check-out hotel Madinah', 'Waktu perkiraan; ikuti arahan Tour Leader.', 'Hotel Madinah'],
+      ['11.00', 'Menuju Bandara Madinah', 'Sesuai rencana keberangkatan rombongan.', 'Madinah'],
+      ['17.20', 'Penerbangan GA 969 menuju Jakarta', 'Garuda Indonesia, jadwal sesuai informasi penerbangan.', 'Bandara Madinah'],
+    ]),
+    simpleDay(13, '2026-12-09', 'Rabu', 'Tiba di Jakarta', 'Jakarta', [
+      ['07.05', 'Tiba di Bandara Soekarno–Hatta', 'Waktu kedatangan WIB (+1 dari keberangkatan Madinah).', 'Jakarta'],
+    ]),
+  ],
+};
+
 export const itinerarySeeds = {
   '27-september-2026': itinerarySeed,
   '29-september-2026': itinerary29Seed,
   '1-november-2026': itinerary1NovemberSeed,
+  '27-november-2026': itinerary27NovemberSeed,
 } as const;
 
 export type TripSlug = keyof typeof itinerarySeeds;
