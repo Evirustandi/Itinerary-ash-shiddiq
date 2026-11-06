@@ -82,6 +82,14 @@ async function getSecondaryItinerary(slug: TripSlug): Promise<ItineraryPayload> 
       const wasGenericThaif = day.dayNumber === 5 && day.events.length === 3
         && day.events[1]?.details === 'Kunjungan mengikuti rute yang ditetapkan pendamping.'
         && day.events[2]?.title === 'Kembali ke Makkah';
+      const needsRaudhah = day.dayNumber === 9 && day.events[0]?.title === 'Kunjungan Museum Madinah'
+        && !day.events.some((event) => event.title.toLowerCase().includes('raudhah'));
+      if (needsRaudhah) {
+        const raudhah = seed.days.find((item) => item.dayNumber === 9)?.events.find((event) => event.title.startsWith('Ziarah Raudhah'));
+        if (!raudhah) return day;
+        return { ...day, title: day.title === 'Museum Madinah · Tentatif' ? 'Museum Madinah & Ziarah Raudhah · Tentatif' : day.title,
+          events: [...day.events, raudhah] };
+      }
       if (!wasGenericMakkah && !wasGenericThaif) return day;
       const revised = seed.days.find((item) => item.dayNumber === day.dayNumber);
       if (!revised) return day;

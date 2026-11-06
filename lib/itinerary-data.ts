@@ -451,7 +451,7 @@ export const itinerary27NovemberSeed: ItineraryPayload = {
   theme: 'emerald',
   timezoneNote: 'Seluruh waktu mengikuti waktu setempat (WIB di Indonesia, AST di Arab Saudi). Waktu kegiatan selain penerbangan dan keberangkatan ke bandara 8 Desember pukul 11.00 merupakan perkiraan.',
   notice: 'Urutan program mengikuti rencana perjalanan. Jam kegiatan di luar penerbangan dan keberangkatan ke bandara 8 Desember pukul 11.00 dapat menyesuaikan kondisi lapangan; ikuti arahan Tour Leader.',
-  updatedAt: '2026-11-06T05:19:00.000Z',
+  updatedAt: '2026-11-06T13:29:00.000Z',
   highlights: [
     'Garuda Indonesia · berangkat ke Jeddah, pulang dari Madinah',
     'Makkah 27 November–3 Desember · Madinah 3–8 Desember',
@@ -512,9 +512,10 @@ export const itinerary27NovemberSeed: ItineraryPayload = {
       ['08.00', 'Ziarah dakhili di sekitar Masjid Nabawi', 'Waktu dan urutan kunjungan dikonfirmasi pendamping.', 'Sekitar Masjid Nabawi'],
       ['13.00', 'Free Program', 'Jemaah memaksimalkan ibadah masing-masing di Masjid Nabawi.', 'Madinah'],
     ]),
-    simpleDay(9, '2026-12-05', 'Sabtu', 'Museum Madinah · Tentatif', 'Madinah', [
+    simpleDay(9, '2026-12-05', 'Sabtu', 'Museum Madinah & Ziarah Raudhah · Tentatif', 'Madinah', [
       ['09.00', 'Kunjungan Museum Madinah', 'Tentatif; menunggu konfirmasi ketersediaan dan arahan Tour Leader.', 'Madinah'],
       ['13.00', 'Free Program', 'Jika kunjungan museum tidak terlaksana, jemaah dapat memaksimalkan ibadah di Masjid Nabawi.', 'Madinah'],
+      ['—', 'Ziarah Raudhah (tentatif)', 'Menunggu konfirmasi izin dan jadwal. Waktu kunjungan mengikuti slot yang diperoleh serta arahan Tour Leader.', 'Masjid Nabawi'],
     ]),
     simpleDay(10, '2026-12-06', 'Ahad', 'City Tour Madinah', 'Madinah', [
       ['07.30', 'Berkumpul untuk city tour Madinah', 'Waktu dan titik kumpul dikonfirmasi oleh Tour Leader.', 'Hotel Madinah'],
